@@ -1,0 +1,155 @@
+/* AGENDAWEB Estilo: Giant Goldfish*/
+
+
+/*1. VARIABLES DE LA MARCA*/
+:root {
+    /* ---------- PALETA GIANT GOLDFISH ---------- */
+    --color-fondo: #E0E4CC;
+    --color-superficie: #A7DBD8;
+    --color-texto-principal: #263238;
+    --color-texto-secundario: #455A64;
+    --color-acento: #C95F00;
+    --color-acento-intenso: #A94F00;
+    --color-borde: #69D2E7;
+    /* ---------- TIPOGRAFÍAS ---------- */
+    --fuente-titulos: 'Poppins', sans-serif;
+    --fuente-cuerpo: 'Inter', sans-serif;
+    /* ---------- FORMAS ---------- */
+    --radio-tarjeta: 12px;
+    --radio-input: 8px;
+    --radio-boton: 8px;
+}
+
+/* 2. CONFIGURACIÓN GENERAL*/
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-fondo);
+    color: var(--color-texto-principal);
+    font-family: var(--fuente-cuerpo);
+}
+
+/* 3. TARJETA DEL FORMULARIO*/
+.tarjeta {
+    width: 90%;
+    max-width: 450px;
+    padding: 30px;
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+    box-shadow: 0 4px 12px rgba(38, 50, 56, 0.15);
+}
+
+/* 4. TÍTULO*/
+.tarjeta h1 {
+    margin-bottom: 5px;
+    color: var(--color-texto-principal);
+    font-family: var(--fuente-titulos);
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* 5. SUBTÍTULO*/
+.subtitulo {
+    margin-bottom: 25px;
+    color: var(--color-texto-secundario);
+    text-align: center;
+}
+
+/* 6. CAMPOS DEL FORMULARIO*/
+.tarjeta input,
+.tarjeta select,
+.tarjeta textarea {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: #FFFFFF;
+    color: var(--color-texto-principal);
+    border: 2px solid var(--color-borde);
+    border-radius: var(--radio-input);
+    font-family: var(--fuente-cuerpo);
+    font-size: 1rem;
+    outline: none;
+}
+
+/* 7. EFECTO AL SELECCIONAR UN CAMPO*/
+.tarjeta input:focus,
+.tarjeta select:focus,
+.tarjeta textarea:focus {
+    border-color: var(--color-acento);
+}
+
+/* 8. CATEGORÍA Y PRIORIDAD*/
+.fila-opciones {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+.fila-opciones select {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* 9. SELECT*/
+.tarjeta select {
+    cursor: pointer;
+}
+
+/* 10. DESCRIPCIÓN*/
+.tarjeta textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* 11. BOTÓN*/
+.tarjeta button {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--color-acento);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radio-boton);
+    font-family: var(--fuente-cuerpo);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* 12. EFECTO DEL BOTÓN*/
+.tarjeta button:hover {
+    background-color: var(--color-acento-intenso);
+}
+
+/* 13. EFECTO AL PRESIONAR*/
+.tarjeta button:active {
+    transform: scale(0.98);
+}
+
+/* 14. DISEÑO RESPONSIVO*/
+@media (max-width: 500px) {
+    .tarjeta {
+        width: 94%;
+        padding: 22px;
+    }
+
+    .tarjeta h1 {
+        font-size: 1.7rem;
+    }
+    /* En pantallas pequeñas, categoría y prioridad pasan a estar una debajo de otra.*/
+    .fila-opciones {
+        flex-direction: column;
+        gap: 0;
+    }
+    .fila-opciones select {
+        margin-bottom: 15px;
+    }
+}
