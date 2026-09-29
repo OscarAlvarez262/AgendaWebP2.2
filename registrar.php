@@ -2,23 +2,82 @@
 
 $errores = [];
 
-$titulo = $_POST['titulo'] ?? '';
-$fecha = $_POST['fecha'] ?? '';
-$categoria = $_POST['categoria'] ?? '';
-$descripcion = $_POST['descripcion'] ?? '';
+$titulo = '';
+$fechaHora = '';
+$categoria = '';
+$descripcion = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if (trim($titulo) === '') {
-        $errores[] = 'El título es obligatorio.';
+    // Recibir datos
+    $titulo = trim($_POST['titulo'] ?? '');
+    $fechaHora = trim($_POST['fecha'] ?? '');
+    $categoria = trim($_POST['categoria'] ?? '');
+    $descripcion = trim($_POST['descripcion'] ?? '');
+
+    // Separar fecha y hora
+    $fecha = '';
+    $hora = '';
+
+    if ($fechaHora !== '') {
+        $partes = explode('T', $fechaHora);
+
+        $fecha = $partes[0] ?? '';
+        $hora = $partes[1] ?? '';
+    }
+
+    // Validación
+    $categoriasOK = [
+        'trabajo',
+        'personal',
+        'estudio',
+        'ocio'
+    ];
+
+    if ($titulo === '') {
+    $errores['titulo'] = 'El título es obligatorio.';
+    } elseif (strlen($titulo) > 120) {
+    $errores['titulo'] = 'Máximo 120 caracteres.';
     }
 
     if ($fecha === '') {
-        $errores[] = 'La fecha es obligatoria.';
+        $errores['fecha'] = 'La fecha es obligatoria.';
+    } elseif (!DateTime::createFromFormat('Y-m-d', $fecha)) {
+        $errores['fecha'] = 'La fecha no es válida.';
     }
 
-    if ($categoria === '') {
-        $errores[] = 'La categoría es obligatoria.';
+    if (!in_array($categoria, $categoriasOK, true)) {
+        $errores['categoria'] = 'Elige una categoría válida.';
+    }
+
+    // Guardar si no hay errores
+    if (empty($errores)) {
+
+        require 'conexion.php';
+
+        $sql = "INSERT INTO eventos
+                (titulo, fecha, hora, categoria, descripcion)
+                VALUES (?, ?, ?, ?, ?)";
+
+        $stmt = $mysqli->prepare($sql);
+
+        $stmt->bind_param(
+            "sssss",
+            $titulo,
+            $fecha,
+            $hora,
+            $categoria,
+            $descripcion
+        );
+
+        $stmt->execute();
+
+        $stmt->close();
+        $mysqli->close();
+
+        // PRG
+        header('Location: index.php?ok=1');
+        exit;
     }
 }
 ?>
@@ -34,16 +93,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
 
     <!-- Hoja de estilos -->
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="css/estilos.css">
 
-    <title><h1>Agenda<span>Web</span></h1></title>
+    <title>AgendaWeb</title>
 </head>
 
 <body>
 
     <form method="post" action="" class="tarjeta">
 
-        <h1>AgendaWeb</h1>
+        <h1>Agenda<span>Web</span></h1>
 
         <p class="subtitulo">
             Registra un nuevo evento
@@ -52,8 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Título -->
         <input 
             type="text" 
-            name="titulo" 
+            name="titulo"
             placeholder="Título"
+            value="<?= htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') ?>"
             required
         >
 
@@ -80,16 +140,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Trabajo
                 </option>
 
-                <option value="Escuela">
-                    Escuela
+                <option value="Estudio">
+                    Estudio
                 </option>
 
-                <option value="Cita">
-                    Cita
-                </option>
-
-                <option value="Otro">
-                    Otro
+                <option value="Ocio">
+                    Ocio
                 </option>
             </select>
 
@@ -115,9 +171,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Descripción -->
         <textarea 
-            name="descripcion" 
+            name="descripcion"
             placeholder="Descripción del evento"
-        ></textarea>
+        ><?= htmlspecialchars($descripcion, ENT_QUOTES, 'UTF-8') ?></textarea>
 
         <!-- Acciones -->
         <div class="acciones-formulario">
