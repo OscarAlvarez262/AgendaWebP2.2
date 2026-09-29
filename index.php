@@ -1,105 +1,167 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Fuentes de Google -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Hoja de estilos -->
     <link rel="stylesheet" href="estilos.css">
-
-    <title>AgendaWeb</title>
+    <title>Mis eventos | AgendaWeb</title>
 </head>
 
-<body>
+<body class="layout">
 
-    <form method="post" action="guardar.php" class="tarjeta">
+    <header class="site-header">
+        <div class="contenedor site-header__inner">
+            <a href="index.php" class="logo">
+                Agenda<span>Web</span>
+            </a>
 
-        <h1>AgendaWeb</h1>
+            <nav class="nav">
+                <a href="index.php" class="nav__link is-active">
+                    Mis eventos
+                </a>
 
-        <p class="subtitulo">
-            Registra un nuevo evento
-        </p>
-
-        <!-- Título -->
-        <input 
-            type="text" 
-            name="titulo" 
-            placeholder="Título"
-            required
-        >
-
-        <!-- Fecha -->
-        <input 
-            type="date" 
-            name="fecha"
-            required
-        >
-
-        <!-- Categoría y prioridad -->
-        <div class="fila-opciones">
-
-            <select name="categoria" required>
-                <option value="" disabled selected>
-                    Categoría
-                </option>
-
-                <option value="Personal">
-                    Personal
-                </option>
-
-                <option value="Trabajo">
-                    Trabajo
-                </option>
-
-                <option value="Escuela">
-                    Escuela
-                </option>
-
-                <option value="Cita">
-                    Cita
-                </option>
-
-                <option value="Otro">
-                    Otro
-                </option>
-            </select>
-
-
-            <select name="prioridad" required>
-                <option value="" disabled selected>
-                    Prioridad
-                </option>
-
-                <option value="Baja">
-                    Baja
-                </option>
-
-                <option value="Media">
-                    Media
-                </option>
-
-                <option value="Alta">
-                    Alta
-                </option>
-            </select>
-
+                <a href="registrar.php" class="nav__link">
+                    + Nuevo evento
+                </a>
+            </nav>
         </div>
+    </header>
 
-        <!-- Descripción -->
-        <textarea 
-            name="descripcion" 
-            placeholder="Descripción del evento"
-        ></textarea>
+    <main class="contenedor dashboard">
 
-        <!-- Botón -->
-        <button type="submit">
-            Agregar evento
-        </button>
+        <section class="bienvenida">
+            <div class="bienvenida__contenido">
+                <span class="etiqueta">TU ESPACIO PERSONAL</span>
 
-    </form>
+                <h1>Organiza tu día.</h1>
+
+                <p>
+                    Ten tus pendientes y actividades en un solo lugar.
+                    Planea mejor, cumple tus metas y aprovecha tu tiempo.
+                </p>
+
+                <a href="registrar.php" class="boton-principal">
+                    + Crear nuevo evento
+                </a>
+            </div>
+
+            <div class="bienvenida__decoracion" aria-hidden="true">
+                <span>✦</span>
+                <div class="decoracion-circulo">A</div>
+                <span>✓</span>
+            </div>
+        </section>
+
+        <section class="resumen">
+            <article class="resumen__tarjeta">
+                <span class="resumen__icono">▤</span>
+                <div>
+                    <p>Total de eventos</p>
+                    <h2>03</h2>
+                </div>
+            </article>
+
+            <article class="resumen__tarjeta">
+                <span class="resumen__icono">◷</span>
+                <div>
+                    <p>Pendientes</p>
+                    <h2>02</h2>
+                </div>
+            </article>
+
+            <article class="resumen__tarjeta">
+                <span class="resumen__icono">✓</span>
+                <div>
+                    <p>Completados</p>
+                    <h2>01</h2>
+                </div>
+            </article>
+        </section>
+
+        <section class="eventos">
+            <div class="eventos__encabezado">
+                <div>
+                    <span class="etiqueta">MANTÉN TODO BAJO CONTROL</span>
+                    <h2>Tus próximos eventos</h2>
+                    <p>Consulta tus actividades y organiza tus pendientes.</p>
+                </div>
+
+                <a href="registrar.php" class="enlace-eventos">
+                    + Agregar evento
+                </a>
+            </div>
+
+            <!-- EJEMPLOS VISUALES:
+                 Sustituye estas tarjetas por el ciclo PHP
+                 que mostrará los eventos guardados en SQL. -->
+
+            <div class="lista-eventos">
+
+                <article class="evento">
+                    <div class="evento__fecha">
+                        <span>30</span>
+                        <small>SEP</small>
+                    </div>
+
+                    <div class="evento__info">
+                        <span class="evento__categoria">Escuela</span>
+                        <h3>Entregar proyecto</h3>
+                        <p>10:00 h · Entrega de actividad escolar</p>
+                    </div>
+
+                    <span class="prioridad prioridad--alta">
+                        Alta
+                    </span>
+                </article>
+
+                <article class="evento">
+                    <div class="evento__fecha">
+                        <span>02</span>
+                        <small>OCT</small>
+                    </div>
+
+                    <div class="evento__info">
+                        <span class="evento__categoria">Personal</span>
+                        <h3>Estudiar para el examen</h3>
+                        <p>16:00 h · Repasar los temas pendientes</p>
+                    </div>
+
+                    <span class="prioridad prioridad--media">
+                        Media
+                    </span>
+                </article>
+
+                <article class="evento">
+                    <div class="evento__fecha">
+                        <span>05</span>
+                        <small>OCT</small>
+                    </div>
+
+                    <div class="evento__info">
+                        <span class="evento__categoria">Trabajo</span>
+                        <h3>Revisar actividades</h3>
+                        <p>12:00 h · Organizar tareas de la semana</p>
+                    </div>
+
+                    <span class="prioridad prioridad--baja">
+                        Baja
+                    </span>
+                </article>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="contenedor">
+            AgendaWeb · Tu nombre · 2026
+        </div>
+    </footer>
 
 </body>
 </html>
