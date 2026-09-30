@@ -15,32 +15,59 @@
 # Por eso conexion.php NO se sube: se genera en el paso 1 de
 # commands a partir de conexion.ejemplo.php.
 #
-# !! ANTES DE PEGAR: vacia el editor (Ctrl+A, Supr).
+# ===============================================================
+# COMO PEGARLO (importante, falla muy facil si te lo saltas)
+# ===============================================================
 #
-# Al crear el sitio, el editor de Setup -> Deploy viene PRECARGADO
-# con una unica linea suelta:
+# El editor de Setup -> Deploy viene PRECARGADO con una unica linea
+# suelta, que es una clave `commands:` vacia:
 #
 #     commands:
 #
-# Si pegas este bloque con el cursor en esa linea (sin salto previo),
-# pasan dos cosas a la vez y el YAML queda roto:
+# Si pegas el bloque de abajo con el cursor en esa linea, pasan dos
+# cosas a la vez y el YAML queda roto:
 #   1. tu `source:` se convierte en item de lista ->  "- source: ..."
-#   2. la clave `commands:` de la preplantilla choca con la del bloque
+#   2. la `commands:` del prellenado choca con la del bloque
 #
 # DomCloud responde:
 #     "Your deployment script is not a valid YAML: Duplicate key
 #      "commands" detected at line 16"
 #
-# Comprobacion rapida antes de ejecutar: la PRIMERA linea debe decir
-# `source: https://github.com/...` (sin guion delante). Si ves
-# `- source:` te falta el salto de linea.
+# Hay dos formas de evitarlo.
 #
-# El bloque de abajo ya incluye `nginx: root` y `fastcgi: 'on'`, asi
-# que sustituye por completo lo que hacia la plantilla.
+# FORMA RECOMENDADA - seleccionar la linea del prellenado y pegarle
+# encima. Asi no puede quedar nunca una segunda clave `commands:`
+# porque la del prellenado ES la del bloque:
+#
+#   1. Clic sobre la linea `commands:` del prellenado
+#   2. Tecla Inicio (Home)  -> cursor al principio de la linea
+#   3. Mayus + Fin (Shift+End) -> selecciona la linea entera
+#   4. Pega el bloque de abajo. Teclado: Ctrl+V
+#
+# FORMA ALTERNATIVA - vaciar todo con Ctrl+A y Supr, y pegar. Si tu
+# editor no te deja seleccionar el contenido, usa esta.
+#
+# COMPROBACION antes de ejecutar: el documento debe tener una sola
+# linea `commands:`. El bloque de abajo empieza por `commands:` a
+# proposito, para que encaje con el prellenado. Si tu `source:` sale
+# como "- source:" te falta el salto de linea.
+#
+# El bloque ya incluye `nginx: root` y `fastcgi: 'on'`, asi que
+# sustituye por completo lo que hacia la plantilla.
 #
 # No toques los desplegables "Enable New Features" ni "Choose a template
-# to start with": el de plantillas SOBRESCRIBE el editor.
+# to start with": el de plantillas SOBRESCRIBE el editor. Si quieres un
+# editor de verdad vacio, usa el menu "Start Over" -> "Custom Template".
 # ===============================================================
+
+# ---8<--- PEGAR DESDE AQUÍ (starting at the prefill commands: line)
+commands:
+  # 1) Generar la conexion sin secretos (usa MARIADB_* del servidor)
+  - cp conexion.ejemplo.php conexion.php
+  - chmod 600 conexion.php
+
+  # 2) Importar el esquema. Es idempotente: redesplegar NO borra datos.
+  - mariadb -u "$USERNAME" -p"$MYPASSWD" "$DATABASE" < db.sql
 
 source: https://github.com/OscarAlvarez262/AgendaWebP2.2
 
@@ -56,14 +83,7 @@ nginx:
     # Evita que db.sql y archivos de entorno se descargan
     - match: ~ \.(sql|log|ini|env)$
       deny: all
-
-commands:
-  # 1) Generar la conexion sin secretos (usa MARIADB_* del servidor)
-  - cp conexion.ejemplo.php conexion.php
-  - chmod 600 conexion.php
-
-  # 2) Importar el esquema. Es idempotente: redesplegar NO borra datos.
-  - mariadb -u "$USERNAME" -p"$MYPASSWD" "$DATABASE" < db.sql
+# ---8<--- PEGAR HASTA AQUÍ
 
 # ---------------------------------------------------------------
 # Variables disponibles en commands:
