@@ -14,6 +14,16 @@
 #
 # Por eso conexion.php NO se sube: se genera en el paso 1 de
 # commands a partir de conexion.ejemplo.php.
+#
+# !! ANTES DE PEGAR: vacia el editor (Ctrl+A, Supr).
+# Al crear el sitio desde una plantilla, el editor de Setup -> Deploy
+# viene PRECARGADO con el YAML de esa plantilla, que ya termina en una
+# clave `commands:`. Si pegas este bloque debajo, quedan dos `commands:`
+# y DomCloud responde:
+#     "Your deployment script is not a valid YAML: Duplicate key
+#      "commands" detected"
+# El bloque de abajo ya incluye `nginx: root` y `fastcgi: 'on'`, asi
+# que sustituye por completo lo que hacia la plantilla.
 # ===============================================================
 
 source: https://github.com/OscarAlvarez262/AgendaWebP2.2
