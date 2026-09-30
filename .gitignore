@@ -1,1 +1,7 @@
+# Credenciales: nunca se versionan
 conexion.php
+.env
+
+# Sistema
+.DS_Store
+Thumbs.db

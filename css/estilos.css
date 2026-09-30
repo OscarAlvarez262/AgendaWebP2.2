@@ -1005,3 +1005,55 @@ main.contenedor {
 }
 /* Botones del formulario */
 
+
+/* =========================================
+   ERRORES DEL FORMULARIO
+   ========================================= */
+
+.alert--error {
+    background: #FDECEA;
+    border: 1px solid #F5C2BE;
+    color: #8A1C13;
+}
+
+.alert--error ul {
+    margin: 6px 0 0;
+    padding-left: 20px;
+}
+
+.campo-error {
+    display: block;
+    margin: -10px 0 15px;
+    color: #B3261E;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.tarjeta input.is-error,
+.tarjeta select.is-error,
+.tarjeta textarea.is-error {
+    border-color: #B3261E;
+}
+
+.tarjeta input.is-error:focus,
+.tarjeta select.is-error:focus,
+.tarjeta textarea.is-error:focus {
+    border-color: #B3261E;
+}
+
+/* =========================================
+   ENCABEZADO DE LA TARJETA
+   ========================================= */
+
+.card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.card__top .card__badge {
+    margin-bottom: 0;
+}
+

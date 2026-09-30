@@ -1,0 +1,51 @@
+# ===============================================================
+# Deploy script de DOM Cloud  --  AgendaWeb
+#
+# Este archivo es REFERENCIA. El script que se ejecuta de verdad
+# no vive en el repo: se pega en la pestaña  Setup -> Deploy
+# de tu sitio en my.domcloud.co
+#
+# Ciclo de trabajo:
+#   1. git add -A && git commit -m "..." && git push
+#   2. Setup -> Deploy -> pulsar "Add a new task" / reejecutar
+#   3. Cada deploy hace git CLONE de cero sobre un public_html
+#      que borra antes. NO es un git pull, asi que todo lo que
+#      no este commiteado se pierde y debe regenerarlo `commands`.
+#
+# Por eso conexion.php NO se sube: se genera en el paso 1 de
+# commands a partir de conexion.ejemplo.php.
+# ===============================================================
+
+source: https://github.com/OscarAlvarez262/AgendaWebP2.2
+
+features:
+  - php latest           # tu PHP local es 8.5; "latest" es lo mas cercano
+  - mysql create agenda  # crea ${USERNAME}_agenda y ajusta $DATABASE
+  - ssl
+
+nginx:
+  root: public_html
+  fastcgi: 'on'
+  locations:
+    # Evita que db.sql y archivos de entorno se descargan
+    - match: ~ \.(sql|log|ini|env)$
+      deny: all
+
+commands:
+  # 1) Generar la conexion sin secretos (usa MARIADB_* del servidor)
+  - cp conexion.ejemplo.php conexion.php
+  - chmod 600 conexion.php
+
+  # 2) Importar el esquema. Es idempotente: redesplegar NO borra datos.
+  - mariadb -u "$USERNAME" -p"$MYPASSWD" "$DATABASE" < db.sql
+
+# ---------------------------------------------------------------
+# Variables disponibles en commands:
+#   $USERNAME  usuario del servidor
+#   $DATABASE  nombre de la BD  (aqui: ${USERNAME}_agenda)
+#   $MYPASSWD  contrasena de MariaDB
+#   $DOMAIN    tu dominio
+#
+# En la app web, PHP ve MARIADB_HOST / MARIADB_USER /
+# MARIADB_PASS / MARIADB_NAME. De ahi saca los datos conexion.php.
+# ---------------------------------------------------------------
