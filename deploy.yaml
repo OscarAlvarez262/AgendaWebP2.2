@@ -16,14 +16,30 @@
 # commands a partir de conexion.ejemplo.php.
 #
 # !! ANTES DE PEGAR: vacia el editor (Ctrl+A, Supr).
-# Al crear el sitio desde una plantilla, el editor de Setup -> Deploy
-# viene PRECARGADO con el YAML de esa plantilla, que ya termina en una
-# clave `commands:`. Si pegas este bloque debajo, quedan dos `commands:`
-# y DomCloud responde:
+#
+# Al crear el sitio, el editor de Setup -> Deploy viene PRECARGADO
+# con una unica linea suelta:
+#
+#     commands:
+#
+# Si pegas este bloque con el cursor en esa linea (sin salto previo),
+# pasan dos cosas a la vez y el YAML queda roto:
+#   1. tu `source:` se convierte en item de lista ->  "- source: ..."
+#   2. la clave `commands:` de la preplantilla choca con la del bloque
+#
+# DomCloud responde:
 #     "Your deployment script is not a valid YAML: Duplicate key
-#      "commands" detected"
+#      "commands" detected at line 16"
+#
+# Comprobacion rapida antes de ejecutar: la PRIMERA linea debe decir
+# `source: https://github.com/...` (sin guion delante). Si ves
+# `- source:` te falta el salto de linea.
+#
 # El bloque de abajo ya incluye `nginx: root` y `fastcgi: 'on'`, asi
 # que sustituye por completo lo que hacia la plantilla.
+#
+# No toques los desplegables "Enable New Features" ni "Choose a template
+# to start with": el de plantillas SOBRESCRIBE el editor.
 # ===============================================================
 
 source: https://github.com/OscarAlvarez262/AgendaWebP2.2
