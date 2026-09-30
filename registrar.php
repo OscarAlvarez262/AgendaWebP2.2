@@ -42,10 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errores['fecha'] = 'La fecha es obligatoria.';
     } else {
         $fechaObj = DateTime::createFromFormat('Y-m-d', $fecha);
+        $avisos = DateTime::getLastErrors();
 
+        // getLastErrors() devuelve un array en PHP 7.x y false en 8.2+.
+        // Comprobar solo warning_count mantiene la validación correcta en ambas.
         if (
             $fechaObj === false
-            || DateTime::getLastErrors() !== false
+            || (is_array($avisos) && $avisos['warning_count'] > 0)
             || $fechaObj->format('Y-m-d') !== $fecha
         ) {
             $errores['fecha'] = 'La fecha no es válida.';
@@ -103,6 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
+
+
 ?>
 
 
@@ -228,7 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Descripción -->
         <textarea 
-            name="descripcion"
+            name="descripcion" 
             placeholder="Descripción del evento"
             <?= isset($errores['descripcion']) ? 'class="is-error"' : '' ?>
         ><?= htmlspecialchars($descripcion, ENT_QUOTES, 'UTF-8') ?></textarea>

@@ -95,3 +95,38 @@ nginx:
 # En la app web, PHP ve MARIADB_HOST / MARIADB_USER /
 # MARIADB_PASS / MARIADB_NAME. De ahi saca los datos conexion.php.
 # ---------------------------------------------------------------
+
+# ===============================================================
+# VIA ALTERNATIVA: SSH + instalador (la que si llego a funcionar)
+# ===============================================================
+#
+# El deploy script arrastro un bloqueo en el desplegable
+# "Enable New Features" y la tarea nunca llego a arrancar. La via
+# que funciona es entrar por SSH y actualizar a mano. En la
+# pestana  Manage  hay un enlace  WebSSH  que abre una terminal
+# sin instalar nada:
+#
+#     cd ~/public_html
+#     git pull origin main
+#
+# Ojo con la diferencia importante: `git pull` CONSERVA
+# conexion.php, porque no esta en git. El deploy script, en
+# cambio, hace clone de cero y lo borra.
+#
+# Despues abre en el navegador:
+#
+#     https://TU_DOMINIO/instalar.php
+#
+# El instalador comprueba la conexion, crea la tabla `eventos`
+# a partir de db.sql, verifica que esten todas las columnas y
+# genera conexion.php con permisos 600 (solo si no existe ya).
+#
+# LA BASE DE DATOS NO LA CREA EL INSTALADOR, y no es un fallo
+# suyo: DomCloud prohibe CREATE DATABASE desde PHP, desde el
+# cliente mariadb y desde phpMyAdmin. La base se crea en
+# Setup -> Database y suele llamarse ${USERNAME}_agenda.
+#
+# Cuando el sitio ya funcione, borra el instalador:
+#
+#     rm ~/public_html/instalar.php
+# ===============================================================
