@@ -7,12 +7,18 @@ $errores = [];
 $id = 0;
 $titulo = '';
 $fechaHora = '';
-$categoria = '';
+$categoriaId = 0;
 $prioridad = '';
 $descripcion = '';
 
-const CATEGORIAS_EDITAR = ['trabajo', 'personal', 'estudio', 'ocio'];
 const PRIORIDADES_EDITAR = ['baja', 'media', 'alta'];
+
+// Categorías desde la base, igual que en registrar.php
+$resultado = $mysqli->query('SELECT id, nombre FROM categorias ORDER BY nombre');
+$categorias = $resultado->fetch_all(MYSQLI_ASSOC);
+$resultado->free();
+
+$idsValidos = array_map('intval', array_column($categorias, 'id'));
 
 // ------------------------------------------------------------------
 // GET: cargar el evento en el formulario
@@ -28,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     try {
         $stmt = $mysqli->prepare(
-            'SELECT titulo, fecha, hora, categoria, prioridad, descripcion
+            'SELECT titulo, fecha, hora, categoria_id, prioridad, descripcion
                FROM eventos
               WHERE id = ?'
         );
@@ -53,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 
     $titulo      = $evento['titulo'];
-    $categoria   = $evento['categoria'];
+    $categoriaId = (int) $evento['categoria_id'];
     $prioridad   = $evento['prioridad'];
     $descripcion = $evento['descripcion'] ?? '';
 
@@ -74,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id          = (int) ($_POST['id'] ?? 0);
     $titulo      = trim($_POST['titulo'] ?? '');
     $fechaHora   = trim($_POST['fecha'] ?? '');
-    $categoria   = trim($_POST['categoria'] ?? '');
+    $categoriaId = (int) ($_POST['categoria_id'] ?? 0);
     $prioridad   = trim($_POST['prioridad'] ?? '');
     $descripcion = trim($_POST['descripcion'] ?? '');
 
@@ -115,8 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if (!in_array($categoria, CATEGORIAS_EDITAR, true)) {
-        $errores['categoria'] = 'Elige una categoría válida.';
+    if (!in_array($categoriaId, $idsValidos, true)) {
+        $errores['categoria_id'] = 'Elige una categoría válida.';
     }
 
     if (!in_array($prioridad, PRIORIDADES_EDITAR, true)) {
@@ -136,18 +142,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     SET titulo = ?,
                         fecha = ?,
                         hora = ?,
-                        categoria = ?,
+                        categoria_id = ?,
                         prioridad = ?,
                         descripcion = ?
                   WHERE id = ?'
             );
 
             $stmt->bind_param(
-                'ssssssi',
+                'sssissi',
                 $titulo,
                 $fecha,
                 $hora,
-                $categoria,
+                $categoriaId,
                 $prioridad,
                 $descripcion,
                 $id
@@ -257,17 +263,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Categoría y prioridad -->
         <div class="fila-opciones">
 
-            <select name="categoria" <?= isset($errores['categoria']) ? 'class="is-error" required' : 'required' ?>>
-                <option value="" disabled <?= $categoria === '' ? 'selected' : '' ?>>
+            <select name="categoria_id" <?= isset($errores['categoria_id']) ? 'class="is-error" required' : 'required' ?>>
+                <option value="" disabled <?= $categoriaId === 0 ? 'selected' : '' ?>>
                     Categoría
                 </option>
 
-                <?php foreach (['personal' => 'Personal', 'trabajo' => 'Trabajo', 'estudio' => 'Estudio', 'ocio' => 'Ocio'] as $valor => $texto): ?>
+                <?php foreach ($categorias as $cat): ?>
                     <option
-                        value="<?= $valor ?>"
-                        <?= $categoria === $valor ? 'selected' : '' ?>
+                        value="<?= (int) $cat['id'] ?>"
+                        <?= $categoriaId === (int) $cat['id'] ? 'selected' : '' ?>
                     >
-                        <?= $texto ?>
+                        <?= htmlspecialchars($cat['nombre'], ENT_QUOTES, 'UTF-8') ?>
                     </option>
                 <?php endforeach; ?>
             </select>
@@ -289,9 +295,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         </div>
 
-        <?php if (isset($errores['categoria'])): ?>
+        <?php if (isset($errores['categoria_id'])): ?>
             <span class="campo-error">
-                <?= htmlspecialchars($errores['categoria'], ENT_QUOTES, 'UTF-8') ?>
+                <?= htmlspecialchars($errores['categoria_id'], ENT_QUOTES, 'UTF-8') ?>
             </span>
         <?php endif; ?>
 

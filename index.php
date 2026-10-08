@@ -12,29 +12,17 @@ function formatearFecha(string $fecha): string
     return date('d/m/Y', strtotime($fecha));
 }
 
-// 'ocio'  →  'Ocio / Deporte'
-function nombreCategoria(string $clave): string
-{
-    $nombres = [
-        'trabajo'  => 'Trabajo',
-        'personal' => 'Personal',
-        'estudio'  => 'Estudio',
-        'ocio'     => 'Ocio / Deporte',
-    ];
-    return $nombres[$clave] ?? $clave;
-}
-
 // Devuelve el HTML de la tarjeta de un evento
 function mostrarEvento(array $ev): string
 {
     $html  = '<article class="card">';
     $html .= '<div class="card__top">';
-    $html .= '<span class="card__badge">' . e(nombreCategoria($ev['categoria'])) . '</span>';
+    $html .= '<span class="card__badge">' . e($ev['categoria']) . '</span>';
 
     if (!empty($ev['prioridad'])) {
         $prioridad = $ev['prioridad'];
         $html .= '<span class="prioridad prioridad--' . e($prioridad) . '">'
-               . e(ucfirst($prioridad)) . '</span>';
+                . e(ucfirst($prioridad)) . '</span>';
     }
 
     $html .= '</div>';
@@ -64,15 +52,30 @@ function mostrarEvento(array $ev): string
 
 require 'conexion.php';
 
+// e y c son apodos (alias); ON dice cómo se relacionan las dos tablas.
+// AS categoria deja la clave igual que siempre usó mostrarEvento().
 $resultado = $mysqli->query(
-    'SELECT id, titulo, fecha, hora, categoria, prioridad, descripcion
-       FROM eventos
-      ORDER BY fecha DESC, hora IS NULL ASC, hora DESC'
+    'SELECT e.id, e.titulo, e.fecha, e.hora, e.prioridad, e.descripcion,
+            c.nombre AS categoria
+       FROM eventos e
+       JOIN categorias c ON c.id = e.categoria_id
+      ORDER BY e.fecha DESC, e.hora IS NULL ASC, e.hora DESC'
 );
 
 $eventos = $resultado->fetch_all(MYSQLI_ASSOC);
 
 $resultado->free();
+
+// Resumen por categoría: LEFT JOIN trae también las que no tienen
+// eventos, y en ese caso COUNT(e.id) sale con 0.
+$resumen = $mysqli->query(
+    'SELECT c.nombre, COUNT(e.id) AS total
+       FROM categorias c
+       LEFT JOIN eventos e ON e.categoria_id = c.id
+      GROUP BY c.id, c.nombre
+      ORDER BY c.nombre'
+)->fetch_all(MYSQLI_ASSOC);
+
 $mysqli->close();
 ?>
 
@@ -141,6 +144,14 @@ $mysqli->close();
                 + Nuevo evento
             </a>
         </div>
+
+        <p class="resumen">
+            <?php foreach ($resumen as $r): ?>
+                <span class="card__badge">
+                    <?= e($r['nombre']) ?> · <?= (int) $r['total'] ?>
+                </span>
+            <?php endforeach; ?>
+        </p>
 
         <?php if (empty($eventos)): ?>
 

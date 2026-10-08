@@ -811,6 +811,16 @@ main.contenedor {
 }
 
 /* =========================================
+   RESUMEN POR CATEGORÍA
+   ========================================= */
+.resumen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 18px;
+}
+
+/* =========================================
    TARJETAS DE EVENTOS
    ========================================= */
 
@@ -834,7 +844,8 @@ main.contenedor {
     box-shadow: 0 4px 12px rgba(38, 50, 56, 0.08);
 }
 
-.card-list .card__badge {
+.card-list .card__badge,
+.resumen .card__badge {
     align-self: flex-start;
     margin-bottom: 10px;
 
@@ -847,6 +858,10 @@ main.contenedor {
 
     font-size: 0.75rem;
     font-weight: 700;
+}
+
+.resumen .card__badge {
+    margin-bottom: 0;
 }
 
 .card__title {

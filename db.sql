@@ -12,17 +12,33 @@
 --     CREATE DATABASE agenda CHARACTER SET utf8mb4;
 --
 -- Es idempotente (IF NOT EXISTS): volver a importar no borra datos.
+-- Las categorías se insertan con INSERT IGNORE: solo entran las que
+-- falten, así reimportar no duplica ni pisa tus filas.
 -- ---------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS categorias (
+    id     INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO categorias (nombre) VALUES
+    ('Trabajo'),
+    ('Personal'),
+    ('Estudio'),
+    ('Ocio / Deporte');
 
 CREATE TABLE IF NOT EXISTS eventos (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     titulo      VARCHAR(120) NOT NULL,
     fecha       DATE NOT NULL,
     hora        TIME NULL,
-    categoria   VARCHAR(20) NOT NULL,
+    categoria_id INT NOT NULL,
     prioridad   VARCHAR(10) NOT NULL DEFAULT 'media',
     descripcion VARCHAR(500) NULL,
     creado_en   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    INDEX (fecha, hora)
+    INDEX (fecha, hora),
+    CONSTRAINT fk_eventos_categoria
+        FOREIGN KEY (categoria_id) REFERENCES categorias (id)
+        ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

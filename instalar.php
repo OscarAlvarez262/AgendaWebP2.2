@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'insta
                         $columnas[$columna['Field']] = $columna['Type'];
                     }
 
-                    $requeridas = ['id', 'titulo', 'fecha', 'hora', 'categoria', 'prioridad', 'descripcion', 'creado_en'];
+                    $requeridas = ['id', 'titulo', 'fecha', 'hora', 'categoria_id', 'prioridad', 'descripcion', 'creado_en'];
                     $faltantes = array_diff($requeridas, array_keys($columnas));
 
                     if ($faltantes) {
@@ -146,6 +146,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'insta
                         $diagnostico['filas'] = $mysqli->query('SELECT COUNT(*) AS total FROM `' . TABLA . '`')
                             ->fetch_assoc()['total'];
                         $diagnostico['base'] = $base;
+
+                        // Las categorias vienen de una tabla aparte: sin filas,
+                        // el select de registrar.php saldria vacio.
+                        $diagnostico['categorias'] = $mysqli
+                            ->query('SELECT COUNT(*) AS total FROM categorias')
+                            ->fetch_assoc()['total'];
+
+                        if ((int) $diagnostico['categorias'] === 0) {
+                            $avisos[] = 'La tabla categorias esta vacia: el formulario no ofrecera ninguna opcion.';
+                        }
                     }
                 }
             }

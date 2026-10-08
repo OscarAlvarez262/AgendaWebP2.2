@@ -1,22 +1,31 @@
 <?php
 
+require 'conexion.php';
+
 $errores = [];
 
 $titulo = '';
 $fechaHora = '';
-$categoria = '';
+$categoriaId = 0;
 $prioridad = '';
 $descripcion = '';
 
-const CATEGORIAS = ['trabajo', 'personal', 'estudio', 'ocio'];
 const PRIORIDADES = ['baja', 'media', 'alta'];
+
+// Las categorías salen de la base: el formulario no las guarda en código
+$resultado = $mysqli->query('SELECT id, nombre FROM categorias ORDER BY nombre');
+$categorias = $resultado->fetch_all(MYSQLI_ASSOC);
+$resultado->free();
+
+// Lista blanca también desde la BD: [1, 2, 3, 4] (viene como texto)
+$idsValidos = array_map('intval', array_column($categorias, 'id'));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Recibir datos
     $titulo = trim($_POST['titulo'] ?? '');
     $fechaHora = trim($_POST['fecha'] ?? '');
-    $categoria = trim($_POST['categoria'] ?? '');
+    $categoriaId = (int) ($_POST['categoria_id'] ?? 0);
     $prioridad = trim($_POST['prioridad'] ?? '');
     $descripcion = trim($_POST['descripcion'] ?? '');
 
@@ -55,8 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if (!in_array($categoria, CATEGORIAS, true)) {
-        $errores['categoria'] = 'Elige una categoría válida.';
+    if (!in_array($categoriaId, $idsValidos, true)) {
+        $errores['categoria_id'] = 'Elige una categoría válida.';
     }
 
     if (!in_array($prioridad, PRIORIDADES, true)) {
@@ -70,21 +79,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Guardar si no hay errores
     if (empty($errores)) {
 
-        require_once 'conexion.php';
-
         try {
             $sql = "INSERT INTO eventos
-                    (titulo, fecha, hora, categoria, prioridad, descripcion)
+                    (titulo, fecha, hora, categoria_id, prioridad, descripcion)
                     VALUES (?, ?, ?, ?, ?, ?)";
 
             $stmt = $mysqli->prepare($sql);
 
             $stmt->bind_param(
-                'ssssss',
+                'sssiss',
                 $titulo,
                 $fecha,
                 $hora,
-                $categoria,
+                $categoriaId,
                 $prioridad,
                 $descripcion
             );
@@ -107,6 +114,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Si llegamos aquí, hubo errores (o es el primer render): cerramos
+// la conexión porque ya leímos las categorías. El éxito hizo exit arriba.
+$mysqli->close();
 
 ?>
 
@@ -187,17 +197,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Categoría y prioridad -->
         <div class="fila-opciones">
 
-            <select name="categoria" <?= isset($errores['categoria']) ? 'class="is-error" required' : 'required' ?>>
-                <option value="" disabled <?= $categoria === '' ? 'selected' : '' ?>>
+            <select name="categoria_id" <?= isset($errores['categoria_id']) ? 'class="is-error" required' : 'required' ?>>
+                <option value="" disabled <?= $categoriaId === 0 ? 'selected' : '' ?>>
                     Categoría
                 </option>
 
-                <?php foreach (['personal' => 'Personal', 'trabajo' => 'Trabajo', 'estudio' => 'Estudio', 'ocio' => 'Ocio'] as $valor => $texto): ?>
-                    <option 
-                        value="<?= $valor ?>" 
-                        <?= $categoria === $valor ? 'selected' : '' ?>
+                <?php foreach ($categorias as $cat): ?>
+                    <option
+                        value="<?= (int) $cat['id'] ?>"
+                        <?= $categoriaId === (int) $cat['id'] ? 'selected' : '' ?>
                     >
-                        <?= $texto ?>
+                        <?= htmlspecialchars($cat['nombre'], ENT_QUOTES, 'UTF-8') ?>
                     </option>
                 <?php endforeach; ?>
             </select>
@@ -219,9 +229,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         </div>
 
-        <?php if (isset($errores['categoria'])): ?>
+        <?php if (isset($errores['categoria_id'])): ?>
             <span class="campo-error">
-                <?= htmlspecialchars($errores['categoria'], ENT_QUOTES, 'UTF-8') ?>
+                <?= htmlspecialchars($errores['categoria_id'], ENT_QUOTES, 'UTF-8') ?>
             </span>
         <?php endif; ?>
 
