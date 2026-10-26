@@ -1,6 +1,7 @@
 <?php
 
-require_once 'conexion.php';
+require __DIR__ . '/partes/sesion.php';
+require_once __DIR__ . '/partes/base_datos.php';
 
 $errores = [];
 
@@ -36,9 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $stmt = $mysqli->prepare(
             'SELECT titulo, fecha, hora, categoria_id, prioridad, descripcion
                FROM eventos
-              WHERE id = ?'
+              WHERE id = ? AND usuario_id = ?'
         );
-        $stmt->bind_param('i', $id);
+        $stmt->bind_param('ii', $id, $usuarioId);
         $stmt->execute();
 
         $evento = $stmt->get_result()->fetch_assoc();
@@ -145,18 +146,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         categoria_id = ?,
                         prioridad = ?,
                         descripcion = ?
-                  WHERE id = ?'
+                  WHERE id = ? AND usuario_id = ?'
             );
 
             $stmt->bind_param(
-                'sssissi',
+                'sssissii',
                 $titulo,
                 $fecha,
                 $hora,
                 $categoriaId,
                 $prioridad,
                 $descripcion,
-                $id
+                $id,
+                $usuarioId
             );
 
             $stmt->execute();

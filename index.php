@@ -1,5 +1,8 @@
 <?php
 
+// Guardia: sin sesión no se entra (y de aquí salen $usuarioId y $usuarioNombre)
+require __DIR__ . '/partes/sesion.php';
+
 // Limpia un texto antes de mostrarlo (evita XSS)
 function e(?string $texto): string
 {
@@ -42,7 +45,8 @@ function mostrarEvento(array $ev): string
     $id = (int) $ev['id'];
     $html .= '<div class="card__actions">'
            . '<a href="editar.php?id=' . $id . '" class="btn-secondary btn-sm">Editar</a>'
-           . '<form method="post" action="borrar.php" class="form-inline">'
+           . '<form method="post" action="borrar.php" class="form-inline"'
+           . ' onsubmit="return confirm(\'¿Borrar este evento? No se puede deshacer.\')">'
            . '<input type="hidden" name="id" value="' . $id . '">'
            . '<button type="submit" class="btn-danger btn-sm">Borrar</button>'
            . '</form></div>';
@@ -50,31 +54,41 @@ function mostrarEvento(array $ev): string
     return $html . '</article>';
 }
 
-require 'conexion.php';
+require __DIR__ . '/partes/base_datos.php';
 
 // e y c son apodos (alias); ON dice cómo se relacionan las dos tablas.
 // AS categoria deja la clave igual que siempre usó mostrarEvento().
-$resultado = $mysqli->query(
+// El WHERE limita la lista a los eventos del usuario con sesión.
+$stmt = $mysqli->prepare(
     'SELECT e.id, e.titulo, e.fecha, e.hora, e.prioridad, e.descripcion,
             c.nombre AS categoria
        FROM eventos e
        JOIN categorias c ON c.id = e.categoria_id
+      WHERE e.usuario_id = ?
       ORDER BY e.fecha DESC, e.hora IS NULL ASC, e.hora DESC'
 );
 
-$eventos = $resultado->fetch_all(MYSQLI_ASSOC);
-
-$resultado->free();
+$stmt->bind_param('i', $usuarioId);
+$stmt->execute();
+$eventos = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
 // Resumen por categoría: LEFT JOIN trae también las que no tienen
 // eventos, y en ese caso COUNT(e.id) sale con 0.
-$resumen = $mysqli->query(
+// Ojo: el filtro del usuario va en el ON, no en un WHERE; si fuera
+// WHERE, las categorías sin eventos tuyos desaparecerían del resumen.
+$stmt = $mysqli->prepare(
     'SELECT c.nombre, COUNT(e.id) AS total
        FROM categorias c
-       LEFT JOIN eventos e ON e.categoria_id = c.id
+       LEFT JOIN eventos e ON e.categoria_id = c.id AND e.usuario_id = ?
       GROUP BY c.id, c.nombre
       ORDER BY c.nombre'
-)->fetch_all(MYSQLI_ASSOC);
+);
+
+$stmt->bind_param('i', $usuarioId);
+$stmt->execute();
+$resumen = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
 $mysqli->close();
 ?>
@@ -102,6 +116,12 @@ $mysqli->close();
                 <a href="registrar.php" class="nav__link">
                     Nuevo evento
                 </a>
+                <span class="nav__link">
+                    Hola, <?= e($usuarioNombre) ?>
+                </span>
+                <a href="logout.php" class="nav__link">
+                    Salir
+                </a>
             </nav>
         </div>
     </header>
@@ -128,7 +148,7 @@ $mysqli->close();
 
         <?php if (($_GET['error'] ?? '') === '1'): ?>
             <div class="alert alert--error" role="alert">
-                No se pudo completar la operación.
+                Ese evento no existe (quizá ya fue borrado).
             </div>
         <?php endif; ?>
 

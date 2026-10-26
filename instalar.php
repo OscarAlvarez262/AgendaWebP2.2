@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'insta
                         $columnas[$columna['Field']] = $columna['Type'];
                     }
 
-                    $requeridas = ['id', 'titulo', 'fecha', 'hora', 'categoria_id', 'prioridad', 'descripcion', 'creado_en'];
+                    $requeridas = ['id', 'usuario_id', 'titulo', 'fecha', 'hora', 'categoria_id', 'prioridad', 'descripcion', 'creado_en'];
                     $faltantes = array_diff($requeridas, array_keys($columnas));
 
                     if ($faltantes) {

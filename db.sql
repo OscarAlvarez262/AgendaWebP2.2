@@ -27,8 +27,20 @@ INSERT IGNORE INTO categorias (nombre) VALUES
     ('Estudio'),
     ('Ocio / Deporte');
 
+CREATE TABLE IF NOT EXISTS usuarios (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    nombre     VARCHAR(80)  NOT NULL,
+    correo     VARCHAR(120) NOT NULL UNIQUE,
+    clave_hash VARCHAR(255) NOT NULL,
+    creado_en  DATETIME     DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Si tu base ya existía antes de P8, la app añade usuario_id y su FK
+-- automáticamente en el primer request (partes/esquema.php).
+-- migracion_p8.sql queda como vía manual y como documentación.
 CREATE TABLE IF NOT EXISTS eventos (
     id          INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id  INT NOT NULL,
     titulo      VARCHAR(120) NOT NULL,
     fecha       DATE NOT NULL,
     hora        TIME NULL,
@@ -37,7 +49,11 @@ CREATE TABLE IF NOT EXISTS eventos (
     descripcion VARCHAR(500) NULL,
     creado_en   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
+    INDEX (usuario_id),
     INDEX (fecha, hora),
+    CONSTRAINT fk_eventos_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+        ON DELETE CASCADE,
     CONSTRAINT fk_eventos_categoria
         FOREIGN KEY (categoria_id) REFERENCES categorias (id)
         ON DELETE RESTRICT

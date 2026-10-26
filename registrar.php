@@ -1,6 +1,7 @@
 <?php
 
-require 'conexion.php';
+require __DIR__ . '/partes/sesion.php';
+require __DIR__ . '/partes/base_datos.php';
 
 $errores = [];
 
@@ -81,13 +82,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         try {
             $sql = "INSERT INTO eventos
-                    (titulo, fecha, hora, categoria_id, prioridad, descripcion)
-                    VALUES (?, ?, ?, ?, ?, ?)";
+                    (usuario_id, titulo, fecha, hora, categoria_id, prioridad, descripcion)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             $stmt = $mysqli->prepare($sql);
 
             $stmt->bind_param(
-                'sssiss',
+                'isssiss',
+                $usuarioId,
                 $titulo,
                 $fecha,
                 $hora,
