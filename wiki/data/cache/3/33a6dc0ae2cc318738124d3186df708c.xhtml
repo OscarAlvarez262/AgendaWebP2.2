@@ -1,0 +1,138 @@
+
+<h1 class="sectionedit1" id="instalacion_de_agendaweb">Instalación de AgendaWeb</h1>
+<div class="level1">
+
+<p>
+<a href="/doku.php?id=agendaweb:start" class="wikilink2" title="agendaweb:start" rel="nofollow" data-wiki-id="agendaweb:start">← Volver a la portada</a>
+</p>
+
+<p>
+Guía para instalar y arrancar <strong>AgendaWeb</strong> en local, con notas para despliegue en DomCloud.
+</p>
+<hr />
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Instalaci\u00f3n de AgendaWeb&quot;,&quot;hid&quot;:&quot;instalacion_de_agendaweb&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:1,&quot;range&quot;:&quot;1-177&quot;} -->
+<h2 class="sectionedit2" id="requisitos">Requisitos</h2>
+<div class="level2">
+<div class="table sectionedit3"><table class="inline">
+	<thead>
+	<tr class="row0">
+		<th class="col0"> Requisito </th><th class="col1"> Detalle </th>
+	</tr>
+	</thead>
+	<tr class="row1">
+		<td class="col0"> PHP </td><td class="col1"> 8.x recomendado (probado con 8.5.10 en local). </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> Extensión </td><td class="col1"> <code>mysqli</code> habilitada. </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> Base de datos </td><td class="col1"> MariaDB / MySQL. </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"> Servidor local </td><td class="col1"> Servidor embebido de PHP: <code>php -S</code>. </td>
+	</tr>
+</table></div>
+<!-- EDIT{&quot;target&quot;:&quot;table&quot;,&quot;name&quot;:&quot;&quot;,&quot;hid&quot;:&quot;table&quot;,&quot;secid&quot;:3,&quot;range&quot;:&quot;202-418&quot;} --><hr />
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Requisitos&quot;,&quot;hid&quot;:&quot;requisitos&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:2,&quot;range&quot;:&quot;178-425&quot;} -->
+<h2 class="sectionedit4" id="obtener_el_proyecto">1. Obtener el proyecto</h2>
+<div class="level2">
+<pre class="code bash"><span class="kw2">git clone</span> https:<span class="sy0">//</span>github.com<span class="sy0">/</span>OscarAlvarez262<span class="sy0">/</span>AgendaWebP2.2.git
+<span class="kw3">cd</span> AgendaWebP2.2</pre>
+
+<p>
+O trabaja desde: <code>…\Practica 4\AgendaWeb\AgendaWebP2.2</code>.
+</p>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;1. Obtener el proyecto&quot;,&quot;hid&quot;:&quot;obtener_el_proyecto&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:4,&quot;range&quot;:&quot;426-624&quot;} -->
+<h2 class="sectionedit5" id="crear_la_base_de_datos_local">2. Crear la base de datos (local)</h2>
+<div class="level2">
+
+<p>
+<code>db.sql</code> <strong>no</strong> incluye <code>CREATE DATABASE</code> ni <code>USE</code> (en DomCloud la base la crea el hosting). En local, créala una vez:
+</p>
+<pre class="code sql"><span class="kw1">CREATE</span> <span class="kw1">DATABASE</span> agenda <span class="kw1">CHARACTER</span> <span class="kw1">SET</span> utf8mb4;</pre>
+
+<p>
+Importa el esquema:
+</p>
+<pre class="code bash">mysql <span class="re5">-u</span> root <span class="re5">-p</span> agenda <span class="sy0">&lt;</span> db.sql</pre>
+<blockquote><div class="no">
+<code>db.sql</code> es idempotente (<code>IF NOT EXISTS</code> / <code>INSERT IGNORE</code>): reimportar no borra datos ni duplica categorías.</div></blockquote>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;2. Crear la base de datos (local)&quot;,&quot;hid&quot;:&quot;crear_la_base_de_datos_local&quot;,&quot;codeblockOffset&quot;:1,&quot;secid&quot;:5,&quot;range&quot;:&quot;625-1059&quot;} -->
+<h2 class="sectionedit6" id="configurar_la_conexion">3. Configurar la conexión</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Copia <code>conexion.ejemplo.php</code> como <code>conexion.php</code>.</div>
+</li>
+<li class="level1"><div class="li"> Rellena credenciales o usa variables de entorno: <code>MARIADB_HOST</code>, <code>MARIADB_USER</code>, <code>MARIADB_PASS</code>, <code>MARIADB_NAME</code>.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Importante:</strong> <code>conexion.php</code> contiene secretos y está en <code>.gitignore</code> (no se sube a GitHub).</div>
+</li>
+</ol>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;3. Configurar la conexi\u00f3n&quot;,&quot;hid&quot;:&quot;configurar_la_conexion&quot;,&quot;codeblockOffset&quot;:3,&quot;secid&quot;:6,&quot;range&quot;:&quot;1060-1387&quot;} -->
+<h2 class="sectionedit7" id="arrancar_el_servidor">4. Arrancar el servidor</h2>
+<div class="level2">
+<pre class="code bash">php <span class="re5">-S</span> localhost:<span class="nu0">8000</span></pre>
+
+<p>
+Abre: <a href="http://localhost:8000/" class="urlextern" title="http://localhost:8000/" rel="ugc nofollow">http://localhost:8000/</a>
+</p>
+
+<p>
+Sin sesión activa, la app redirige a <code>login.php</code>.
+</p>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;4. Arrancar el servidor&quot;,&quot;hid&quot;:&quot;arrancar_el_servidor&quot;,&quot;codeblockOffset&quot;:3,&quot;secid&quot;:7,&quot;range&quot;:&quot;1388-1551&quot;} -->
+<h2 class="sectionedit8" id="primer_uso_p8">5. Primer uso (P8)</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Crea una cuenta en <code>registro.php</code> e inicia sesión.</div>
+</li>
+<li class="level1"><div class="li"> La app ejecuta una <strong>migración automática</strong> (<code>partes/esquema.php</code>) en el primer request: ajusta <code>usuarios</code>, <code>eventos.usuario_id</code>, FK y respaldo.</div>
+</li>
+<li class="level1"><div class="li"> Si había eventos antiguos sin dueño (P7), el <strong>primer usuario</strong> que se registra/inicia sesión los reclama.</div>
+</li>
+</ol>
+<hr />
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;5. Primer uso (P8)&quot;,&quot;hid&quot;:&quot;primer_uso_p8&quot;,&quot;codeblockOffset&quot;:4,&quot;secid&quot;:8,&quot;range&quot;:&quot;1552-1919&quot;} -->
+<h2 class="sectionedit9" id="domcloud_resumen">DomCloud (resumen)</h2>
+<div class="level2">
+<div class="table sectionedit10"><table class="inline">
+	<thead>
+	<tr class="row0">
+		<th class="col0"> Elemento </th><th class="col1"> Nota </th>
+	</tr>
+	</thead>
+	<tr class="row1">
+		<td class="col0"> Base </td><td class="col1"> Suele ser <code>${USERNAME}_agenda</code> (feature <code>mysql create agenda</code>). </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> Deploy </td><td class="col1"> <code>deploy.yaml</code> es referencia; el script real se configura en Setup → Deploy. </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> Conexión </td><td class="col1"> Puede generarse <code>conexion.php</code> desde <code>conexion.ejemplo.php</code>. </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"> Secretos </td><td class="col1"> Nunca subir <code>conexion.php</code> ni <code>LocalSettings.php</code> (MediaWiki) a GitHub. </td>
+	</tr>
+</table></div>
+<!-- EDIT{&quot;target&quot;:&quot;table&quot;,&quot;name&quot;:&quot;&quot;,&quot;hid&quot;:&quot;table1&quot;,&quot;secid&quot;:10,&quot;range&quot;:&quot;1952-2315&quot;} --><hr />
+
+<p>
+<a href="/doku.php?id=agendaweb:start" class="wikilink2" title="agendaweb:start" rel="nofollow" data-wiki-id="agendaweb:start">← Volver a la portada</a> | <a href="/doku.php?id=agendaweb:base_de_datos" class="wikilink1" title="agendaweb:base_de_datos" data-wiki-id="agendaweb:base_de_datos">Base de datos →</a> | <a href="/doku.php?id=agendaweb:paginas" class="wikilink1" title="agendaweb:paginas" data-wiki-id="agendaweb:paginas">Páginas →</a>
+</p>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;DomCloud (resumen)&quot;,&quot;hid&quot;:&quot;domcloud_resumen&quot;,&quot;codeblockOffset&quot;:4,&quot;secid&quot;:9,&quot;range&quot;:&quot;1920-&quot;} -->

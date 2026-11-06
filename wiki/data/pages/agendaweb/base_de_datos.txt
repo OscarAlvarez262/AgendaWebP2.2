@@ -1,0 +1,80 @@
+====== Base de datos de AgendaWeb ======
+
+[[start|← Volver a la portada]]
+
+El esquema vive en ''db.sql''. Usa **utf8mb4** e **InnoDB**.
+
+> Nota (revisión 2): la migración P8 crea ''eventos_respaldo_p8'' antes de añadir ''usuario_id'' cuando aplica.
+
+----
+
+===== Tablas =====
+
+^ Tabla ^ Propósito ^ Campos principales ^
+| ''categorias'' | Catálogo de categorías. | ''id'' (PK), ''nombre'' (UNIQUE). Valores iniciales: Trabajo, Personal, Estudio, Ocio / Deporte. |
+| ''usuarios'' | Cuentas (P8). | ''id'' (PK), ''nombre'', ''correo'' (UNIQUE), ''clave_hash'' (nunca contraseña), ''creado_en''. |
+| ''eventos'' | Eventos por usuario (incluye búsqueda por título en ''index.php''). | ''id'' (PK), ''usuario_id'' (FK), ''titulo'', ''fecha'', ''hora'' (NULL), ''categoria_id'' (FK), ''prioridad'', ''descripcion'', ''creado_en''. |
+| ''eventos_respaldo_p8'' | Respaldo de migración. | Copia de ''eventos'' antes de añadir ''usuario_id'' (creada automáticamente si aplica). |
+
+===== Relaciones =====
+
+^ FK ^ Referencia ^ Regla ^ Motivo ^
+| ''eventos.usuario_id'' | ''usuarios.id'' | **ON DELETE CASCADE** | El evento pertenece al usuario; al borrar la cuenta se eliminan sus eventos. |
+| ''eventos.categoria_id'' | ''categorias.id'' | **ON DELETE RESTRICT** | La categoría es catálogo compartido; no se borra si hay eventos que la usan. |
+
+----
+
+===== Esquema SQL =====
+
+<code sql>
+CREATE TABLE IF NOT EXISTS categorias (
+    id     INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO categorias (nombre) VALUES
+    ('Trabajo'),
+    ('Personal'),
+    ('Estudio'),
+    ('Ocio / Deporte');
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    nombre     VARCHAR(80)  NOT NULL,
+    correo     VARCHAR(120) NOT NULL UNIQUE,
+    clave_hash VARCHAR(255) NOT NULL,
+    creado_en  DATETIME     DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS eventos (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id   INT NOT NULL,
+    titulo       VARCHAR(120) NOT NULL,
+    fecha        DATE NOT NULL,
+    hora         TIME NULL,
+    categoria_id INT NOT NULL,
+    prioridad    VARCHAR(10) NOT NULL DEFAULT 'media',
+    descripcion  VARCHAR(500) NULL,
+    creado_en    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX (usuario_id),
+    INDEX (fecha, hora),
+    CONSTRAINT fk_eventos_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_eventos_categoria
+        FOREIGN KEY (categoria_id) REFERENCES categorias (id)
+        ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+</code>
+
+----
+
+===== Notas =====
+
+  * En local: ''CREATE DATABASE agenda CHARACTER SET utf8mb4;'' (''db.sql'' no lo incluye por compatibilidad con DomCloud).
+  * ''migracion_p8.sql'' es la vía manual/idempotente de referencia; la app también migra automáticamente vía ''partes/esquema.php''.
+
+----
+
+[[agendaweb:instalacion|← Instalación]] | [[start|Portada]] | [[agendaweb:paginas|Páginas →]]

@@ -1,0 +1,121 @@
+
+<h1 class="sectionedit1" id="base_de_datos_de_agendaweb">Base de datos de AgendaWeb</h1>
+<div class="level1">
+
+<p>
+<a href="/doku.php?id=agendaweb:start" class="wikilink2" title="agendaweb:start" rel="nofollow" data-wiki-id="agendaweb:start">← Volver a la portada</a>
+</p>
+
+<p>
+El esquema vive en <code>db.sql</code>. Usa <strong>utf8mb4</strong> e <strong>InnoDB</strong>.
+</p>
+<blockquote><div class="no">
+Nota (revisión 2): la migración P8 crea <code>eventos_respaldo_p8</code> antes de añadir <code>usuario_id</code> cuando aplica.</div></blockquote>
+<hr />
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Base de datos de AgendaWeb&quot;,&quot;hid&quot;:&quot;base_de_datos_de_agendaweb&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:1,&quot;range&quot;:&quot;1-261&quot;} -->
+<h2 class="sectionedit2" id="tablas">Tablas</h2>
+<div class="level2">
+<div class="table sectionedit3"><table class="inline">
+	<thead>
+	<tr class="row0">
+		<th class="col0"> Tabla </th><th class="col1"> Propósito </th><th class="col2"> Campos principales </th>
+	</tr>
+	</thead>
+	<tr class="row1">
+		<td class="col0"> <code>categorias</code> </td><td class="col1"> Catálogo de categorías. </td><td class="col2"> <code>id</code> (PK), <code>nombre</code> (UNIQUE). Valores iniciales: Trabajo, Personal, Estudio, Ocio / Deporte. </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> <code>usuarios</code> </td><td class="col1"> Cuentas (P8). </td><td class="col2"> <code>id</code> (PK), <code>nombre</code>, <code>correo</code> (UNIQUE), <code>clave_hash</code> (nunca contraseña), <code>creado_en</code>. </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> <code>eventos</code> </td><td class="col1"> Eventos por usuario (incluye búsqueda por título en <code>index.php</code>). </td><td class="col2"> <code>id</code> (PK), <code>usuario_id</code> (FK), <code>titulo</code>, <code>fecha</code>, <code>hora</code> (NULL), <code>categoria_id</code> (FK), <code>prioridad</code>, <code>descripcion</code>, <code>creado_en</code>. </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"> <code>eventos_respaldo_p8</code> </td><td class="col1"> Respaldo de migración. </td><td class="col2"> Copia de <code>eventos</code> antes de añadir <code>usuario_id</code> (creada automáticamente si aplica). </td>
+	</tr>
+</table></div>
+<!-- EDIT{&quot;target&quot;:&quot;table&quot;,&quot;name&quot;:&quot;&quot;,&quot;hid&quot;:&quot;table&quot;,&quot;secid&quot;:3,&quot;range&quot;:&quot;282-983&quot;} -->
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Tablas&quot;,&quot;hid&quot;:&quot;tablas&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:2,&quot;range&quot;:&quot;262-984&quot;} -->
+<h2 class="sectionedit4" id="relaciones">Relaciones</h2>
+<div class="level2">
+<div class="table sectionedit5"><table class="inline">
+	<thead>
+	<tr class="row0">
+		<th class="col0"> FK </th><th class="col1"> Referencia </th><th class="col2"> Regla </th><th class="col3"> Motivo </th>
+	</tr>
+	</thead>
+	<tr class="row1">
+		<td class="col0"> <code>eventos.usuario_id</code> </td><td class="col1"> <code>usuarios.id</code> </td><td class="col2"> <strong>ON DELETE CASCADE</strong> </td><td class="col3"> El evento pertenece al usuario; al borrar la cuenta se eliminan sus eventos. </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> <code>eventos.categoria_id</code> </td><td class="col1"> <code>categorias.id</code> </td><td class="col2"> <strong>ON DELETE RESTRICT</strong> </td><td class="col3"> La categoría es catálogo compartido; no se borra si hay eventos que la usan. </td>
+	</tr>
+</table></div>
+<!-- EDIT{&quot;target&quot;:&quot;table&quot;,&quot;name&quot;:&quot;&quot;,&quot;hid&quot;:&quot;table1&quot;,&quot;secid&quot;:5,&quot;range&quot;:&quot;1009-1348&quot;} --><hr />
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Relaciones&quot;,&quot;hid&quot;:&quot;relaciones&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:4,&quot;range&quot;:&quot;985-1355&quot;} -->
+<h2 class="sectionedit6" id="esquema_sql">Esquema SQL</h2>
+<div class="level2">
+<pre class="code sql"><span class="kw1">CREATE</span> <span class="kw1">TABLE</span> <span class="kw1">IF</span> <span class="kw1">NOT</span> <span class="kw1">EXISTS</span> categorias <span class="br0">&#40;</span>
+    id     <span class="kw1">INT</span> <span class="kw1">AUTO_INCREMENT</span> <span class="kw1">PRIMARY</span> <span class="kw1">KEY</span><span class="sy0">,</span>
+    nombre <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">50</span><span class="br0">&#41;</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span> <span class="kw1">UNIQUE</span>
+<span class="br0">&#41;</span> ENGINE<span class="sy0">=</span>InnoDB <span class="kw1">DEFAULT</span> CHARSET<span class="sy0">=</span>utf8mb4;
+&nbsp;
+<span class="kw1">INSERT</span> <span class="kw1">IGNORE</span> <span class="kw1">INTO</span> categorias <span class="br0">&#40;</span>nombre<span class="br0">&#41;</span> <span class="kw1">VALUES</span>
+    <span class="br0">&#40;</span><span class="st0">'Trabajo'</span><span class="br0">&#41;</span><span class="sy0">,</span>
+    <span class="br0">&#40;</span><span class="st0">'Personal'</span><span class="br0">&#41;</span><span class="sy0">,</span>
+    <span class="br0">&#40;</span><span class="st0">'Estudio'</span><span class="br0">&#41;</span><span class="sy0">,</span>
+    <span class="br0">&#40;</span><span class="st0">'Ocio / Deporte'</span><span class="br0">&#41;</span>;
+&nbsp;
+<span class="kw1">CREATE</span> <span class="kw1">TABLE</span> <span class="kw1">IF</span> <span class="kw1">NOT</span> <span class="kw1">EXISTS</span> usuarios <span class="br0">&#40;</span>
+    id         <span class="kw1">INT</span> <span class="kw1">AUTO_INCREMENT</span> <span class="kw1">PRIMARY</span> <span class="kw1">KEY</span><span class="sy0">,</span>
+    nombre     <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">80</span><span class="br0">&#41;</span>  <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    correo     <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">120</span><span class="br0">&#41;</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span> <span class="kw1">UNIQUE</span><span class="sy0">,</span>
+    clave_hash <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">255</span><span class="br0">&#41;</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    creado_en  DATETIME     <span class="kw1">DEFAULT</span> <span class="kw1">CURRENT_TIMESTAMP</span>
+<span class="br0">&#41;</span> ENGINE<span class="sy0">=</span>InnoDB <span class="kw1">DEFAULT</span> CHARSET<span class="sy0">=</span>utf8mb4;
+&nbsp;
+<span class="kw1">CREATE</span> <span class="kw1">TABLE</span> <span class="kw1">IF</span> <span class="kw1">NOT</span> <span class="kw1">EXISTS</span> eventos <span class="br0">&#40;</span>
+    id           <span class="kw1">INT</span> <span class="kw1">AUTO_INCREMENT</span> <span class="kw1">PRIMARY</span> <span class="kw1">KEY</span><span class="sy0">,</span>
+    usuario_id   <span class="kw1">INT</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    titulo       <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">120</span><span class="br0">&#41;</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    fecha        <span class="kw1">DATE</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    hora         <span class="kw1">TIME</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    categoria_id <span class="kw1">INT</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    prioridad    <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">10</span><span class="br0">&#41;</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span> <span class="kw1">DEFAULT</span> <span class="st0">'media'</span><span class="sy0">,</span>
+    descripcion  <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">500</span><span class="br0">&#41;</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    creado_en    <span class="kw1">TIMESTAMP</span> <span class="kw1">DEFAULT</span> <span class="kw1">CURRENT_TIMESTAMP</span><span class="sy0">,</span>
+&nbsp;
+    <span class="kw1">INDEX</span> <span class="br0">&#40;</span>usuario_id<span class="br0">&#41;</span><span class="sy0">,</span>
+    <span class="kw1">INDEX</span> <span class="br0">&#40;</span>fecha<span class="sy0">,</span> hora<span class="br0">&#41;</span><span class="sy0">,</span>
+    <span class="kw1">CONSTRAINT</span> fk_eventos_usuario
+        <span class="kw1">FOREIGN</span> <span class="kw1">KEY</span> <span class="br0">&#40;</span>usuario_id<span class="br0">&#41;</span> <span class="kw1">REFERENCES</span> usuarios <span class="br0">&#40;</span>id<span class="br0">&#41;</span>
+        <span class="kw1">ON</span> <span class="kw1">DELETE</span> CASCADE<span class="sy0">,</span>
+    <span class="kw1">CONSTRAINT</span> fk_eventos_categoria
+        <span class="kw1">FOREIGN</span> <span class="kw1">KEY</span> <span class="br0">&#40;</span>categoria_id<span class="br0">&#41;</span> <span class="kw1">REFERENCES</span> categorias <span class="br0">&#40;</span>id<span class="br0">&#41;</span>
+        <span class="kw1">ON</span> <span class="kw1">DELETE</span> <span class="kw1">RESTRICT</span>
+<span class="br0">&#41;</span> ENGINE<span class="sy0">=</span>InnoDB <span class="kw1">DEFAULT</span> CHARSET<span class="sy0">=</span>utf8mb4;</pre>
+<hr />
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Esquema SQL&quot;,&quot;hid&quot;:&quot;esquema_sql&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:6,&quot;range&quot;:&quot;1356-2723&quot;} -->
+<h2 class="sectionedit7" id="notas">Notas</h2>
+<div class="level2">
+<ul>
+<li class="level1"><div class="li"> En local: <code>CREATE DATABASE agenda CHARACTER SET utf8mb4;</code> (<code>db.sql</code> no lo incluye por compatibilidad con DomCloud).</div>
+</li>
+<li class="level1"><div class="li"> <code>migracion_p8.sql</code> es referencia manual/idempotente; <code>partes/esquema.php</code> aplica la migración automáticamente.</div>
+</li>
+</ul>
+<hr />
+
+<p>
+<a href="/doku.php?id=agendaweb:instalacion" class="wikilink1" title="agendaweb:instalacion" data-wiki-id="agendaweb:instalacion">← Instalación</a> | <a href="/doku.php?id=agendaweb:start" class="wikilink2" title="agendaweb:start" rel="nofollow" data-wiki-id="agendaweb:start">Portada</a> | <a href="/doku.php?id=agendaweb:paginas" class="wikilink1" title="agendaweb:paginas" data-wiki-id="agendaweb:paginas">Páginas →</a>
+</p>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Notas&quot;,&quot;hid&quot;:&quot;notas&quot;,&quot;codeblockOffset&quot;:1,&quot;secid&quot;:7,&quot;range&quot;:&quot;2724-&quot;} -->

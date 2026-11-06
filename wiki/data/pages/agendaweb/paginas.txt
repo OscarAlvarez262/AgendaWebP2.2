@@ -1,0 +1,50 @@
+====== Páginas y archivos de AgendaWeb ======
+
+[[start|← Volver a la portada]]
+
+Clasificación de los archivos principales del proyecto (carpeta ''AgendaWebP2.2'').
+
+----
+
+===== Públicos (sin sesión) =====
+
+^ Archivo ^ Función ^
+| ''login.php'' | Formulario e inicio de sesión (''password_verify'', crea ''$_SESSION'', ''session_regenerate_id''). |
+| ''registro.php'' | Alta de cuenta con validación, ''password_hash'' y control de correo duplicado. |
+| ''logout.php'' | Cierra sesión y redirige al login. |
+
+===== Privados (requieren sesión) =====
+
+Incluyen ''partes/sesion.php'' (y conexión/migración según el caso). Sin sesión redirigen a ''login.php''.
+
+^ Archivo ^ Función ^
+| ''index.php'' | Listado de eventos del usuario, resumen por categoría, buscador por título (''GET buscar'', ''LIKE'' preparado) y enlaces a editar/borrar. |
+| ''registrar.php'' | Formulario para crear un evento (''INSERT'' con ''usuario_id''). |
+| ''editar.php'' | Carga y actualiza un evento solo si pertenece al usuario (''SELECT/UPDATE ... WHERE id=? AND usuario_id=?''). |
+
+===== Solo procesan / redirigen (acciones) =====
+
+^ Archivo ^ Función ^
+| ''borrar.php'' | Solo acepta **POST**. Borra el evento solo si es del usuario (''DELETE ... WHERE id=? AND usuario_id=?''), usa PRG y redirige a ''index.php'' con ''borrado'' o ''error''. |
+
+===== Piezas internas =====
+
+^ Archivo/Carpeta ^ Función ^
+| ''partes/sesion.php'' | Guardia de sesión: ''session_start()'', redirección si no hay ''uid'', define ''$usuarioId'' y ''$usuarioNombre''. |
+| ''partes/base_datos.php'' | Punto único: incluye ''conexion.php'' + ''partes/esquema.php'' y ejecuta ''asegurarEsquemaP8($mysqli)''. |
+| ''partes/esquema.php'' | Migración automática P8 (idempotente): crea ''usuarios'', añade ''usuario_id''/FK/respaldo, reclama eventos huérfanos al primer usuario. |
+| ''conexion.php'' | Credenciales locales (no versionado). |
+| ''conexion.ejemplo.php'' | Plantilla sin secretos; base para generar ''conexion.php''. |
+| ''db.sql'' | Esquema de la base (tablas y categorías). |
+| ''migracion_p8.sql'' | Migración P8 manual/idempotente (referencia). |
+| ''deploy.yaml'' | Referencia del despliegue en DomCloud. |
+| ''instalar.php'' | Instalador/ayuda legacy (público; recomendable retirar en producción). |
+| ''css/estilos.css'' | Estilos de la interfaz. |
+
+===== Flujo general =====
+
+  * Acceso → ''login.php'' / ''registro.php'' → sesión.
+  * CRUD → páginas privadas usan ''partes/sesion.php'' + ''partes/base_datos.php''.
+  * Autorización → todas las operaciones sobre eventos filtran por ''usuario_id = ?''.
+
+Volver a [[start|la portada]].

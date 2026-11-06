@@ -1,0 +1,141 @@
+
+<h1 class="sectionedit1" id="paginas_y_archivos_de_agendaweb">Páginas y archivos de AgendaWeb</h1>
+<div class="level1">
+
+<p>
+<a href="/doku.php?id=agendaweb:start" class="wikilink2" title="agendaweb:start" rel="nofollow" data-wiki-id="agendaweb:start">← Volver a la portada</a>
+</p>
+
+<p>
+Mapa de los archivos principales del proyecto <code>AgendaWebP2.2</code>.
+</p>
+<hr />
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;P\u00e1ginas y archivos de AgendaWeb&quot;,&quot;hid&quot;:&quot;paginas_y_archivos_de_agendaweb&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:1,&quot;range&quot;:&quot;1-155&quot;} -->
+<h2 class="sectionedit2" id="publicas_sin_sesion">1. Públicas (sin sesión)</h2>
+<div class="level2">
+<div class="table sectionedit3"><table class="inline">
+	<thead>
+	<tr class="row0">
+		<th class="col0"> Archivo </th><th class="col1"> Rol </th><th class="col2"> Detalle </th>
+	</tr>
+	</thead>
+	<tr class="row1">
+		<td class="col0"> <code>login.php</code> </td><td class="col1"> Autenticación </td><td class="col2"> Valida credenciales con <code>password_verify()</code>, regenera sesión y crea <code>$_SESSION[&#039;uid&#039;]</code>. </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> <code>registro.php</code> </td><td class="col1"> Alta </td><td class="col2"> Valida datos, guarda <code>password_hash()</code>, controla correo duplicado; puede reclamar eventos huérfanos al primer usuario. </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> <code>logout.php</code> </td><td class="col1"> Salida </td><td class="col2"> Destruye sesión y redirige a <code>login.php</code>. </td>
+	</tr>
+</table></div>
+<!-- EDIT{&quot;target&quot;:&quot;table&quot;,&quot;name&quot;:&quot;&quot;,&quot;hid&quot;:&quot;table&quot;,&quot;secid&quot;:3,&quot;range&quot;:&quot;196-580&quot;} -->
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;1. P\u00fablicas (sin sesi\u00f3n)&quot;,&quot;hid&quot;:&quot;publicas_sin_sesion&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:2,&quot;range&quot;:&quot;156-581&quot;} -->
+<h2 class="sectionedit4" id="privadas_requieren_sesion">2. Privadas (requieren sesión)</h2>
+<div class="level2">
+
+<p>
+Usan <code>partes/sesion.php</code> + <code>partes/base_datos.php</code>. Sin sesión → <code>login.php</code>.
+</p>
+<div class="table sectionedit5"><table class="inline">
+	<thead>
+	<tr class="row0">
+		<th class="col0"> Archivo </th><th class="col1"> Rol </th><th class="col2"> Detalle </th>
+	</tr>
+	</thead>
+	<tr class="row1">
+		<td class="col0"> <code>index.php</code> </td><td class="col1"> Listado </td><td class="col2"> Muestra eventos del usuario, resumen por categoría y <strong>buscador por título</strong> (<code>GET buscar</code>, <code>LIKE</code> con consulta preparada). </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> <code>registrar.php</code> </td><td class="col1"> Crear </td><td class="col2"> Inserta evento con <code>usuario_id</code> de la sesión. </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> <code>editar.php</code> </td><td class="col1"> Editar </td><td class="col2"> <code>SELECT/UPDATE</code> solo si <code>id = ? AND usuario_id = ?</code>. </td>
+	</tr>
+</table></div>
+<!-- EDIT{&quot;target&quot;:&quot;table&quot;,&quot;name&quot;:&quot;&quot;,&quot;hid&quot;:&quot;table1&quot;,&quot;secid&quot;:5,&quot;range&quot;:&quot;715-1070&quot;} -->
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;2. Privadas (requieren sesi\u00f3n)&quot;,&quot;hid&quot;:&quot;privadas_requieren_sesion&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:4,&quot;range&quot;:&quot;582-1071&quot;} -->
+<h2 class="sectionedit6" id="acciones_solo_procesan">3. Acciones / solo procesan</h2>
+<div class="level2">
+<div class="table sectionedit7"><table class="inline">
+	<thead>
+	<tr class="row0">
+		<th class="col0"> Archivo </th><th class="col1"> Método </th><th class="col2"> Detalle </th>
+	</tr>
+	</thead>
+	<tr class="row1">
+		<td class="col0"> <code>borrar.php</code> </td><td class="col1"> <strong>POST</strong> </td><td class="col2"> Elimina solo eventos propios (<code>DELETE … WHERE id=? AND usuario_id=?</code>), PRG a <code>index.php?borrado=1</code> o <code>?error=1</code>. </td>
+	</tr>
+</table></div>
+<!-- EDIT{&quot;target&quot;:&quot;table&quot;,&quot;name&quot;:&quot;&quot;,&quot;hid&quot;:&quot;table2&quot;,&quot;secid&quot;:7,&quot;range&quot;:&quot;1113-1297&quot;} -->
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;3. Acciones \/ solo procesan&quot;,&quot;hid&quot;:&quot;acciones_solo_procesan&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:6,&quot;range&quot;:&quot;1072-1298&quot;} -->
+<h2 class="sectionedit8" id="piezas_internas">4. Piezas internas</h2>
+<div class="level2">
+<div class="table sectionedit9"><table class="inline">
+	<thead>
+	<tr class="row0">
+		<th class="col0"> Ruta </th><th class="col1"> Función </th>
+	</tr>
+	</thead>
+	<tr class="row1">
+		<td class="col0"> <code>partes/sesion.php</code> </td><td class="col1"> Guardia: inicia sesión, redirige si falta <code>uid</code>, expone <code>$usuarioId/$usuarioNombre</code>. </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> <code>partes/base_datos.php</code> </td><td class="col1"> Punto único: carga conexión + <code>esquema.php</code> y ejecuta migración P8. </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> <code>partes/esquema.php</code> </td><td class="col1"> Migración automática idempotente (<code>usuarios</code>, <code>usuario_id</code>, FK, respaldo, reclamo de huérfanos). </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"> <code>conexion.php</code> </td><td class="col1"> Credenciales locales (<strong>no versionado</strong>). </td>
+	</tr>
+	<tr class="row5">
+		<td class="col0"> <code>conexion.ejemplo.php</code> </td><td class="col1"> Plantilla sin secretos. </td>
+	</tr>
+	<tr class="row6">
+		<td class="col0"> <code>db.sql</code> </td><td class="col1"> Esquema base (tablas/categorías). </td>
+	</tr>
+	<tr class="row7">
+		<td class="col0"> <code>migracion_p8.sql</code> </td><td class="col1"> Migración P8 manual de referencia. </td>
+	</tr>
+	<tr class="row8">
+		<td class="col0"> <code>deploy.yaml</code> </td><td class="col1"> Referencia de despliegue (DomCloud). </td>
+	</tr>
+	<tr class="row9">
+		<td class="col0"> <code>instalar.php</code> </td><td class="col1"> Utilidad legacy (pública; conviene retirar en producción). </td>
+	</tr>
+	<tr class="row10">
+		<td class="col0"> <code>css/estilos.css</code> </td><td class="col1"> Estilos de la interfaz. </td>
+	</tr>
+</table></div>
+<!-- EDIT{&quot;target&quot;:&quot;table&quot;,&quot;name&quot;:&quot;&quot;,&quot;hid&quot;:&quot;table3&quot;,&quot;secid&quot;:9,&quot;range&quot;:&quot;1331-2134&quot;} --><hr />
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;4. Piezas internas&quot;,&quot;hid&quot;:&quot;piezas_internas&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:8,&quot;range&quot;:&quot;1299-2141&quot;} -->
+<h2 class="sectionedit10" id="seguridad_aplicada">Seguridad aplicada</h2>
+<div class="level2">
+<ul>
+<li class="level1"><div class="li"> <strong>Autenticación:</strong> sesión + hash de contraseña.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Autorización:</strong> todas las consultas de eventos filtran por <code>usuario_id = ?</code>.</div>
+</li>
+<li class="level1"><div class="li"> <strong>SQL seguro:</strong> consultas preparadas + <code>bind_param</code>.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Salida segura:</strong> <code>htmlspecialchars</code> al mostrar datos.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Borrado seguro:</strong> solo por <code>POST</code> + confirmación.</div>
+</li>
+</ul>
+<hr />
+
+<p>
+<a href="/doku.php?id=agendaweb:base_de_datos" class="wikilink1" title="agendaweb:base_de_datos" data-wiki-id="agendaweb:base_de_datos">← Base de datos</a> | <a href="/doku.php?id=agendaweb:start" class="wikilink2" title="agendaweb:start" rel="nofollow" data-wiki-id="agendaweb:start">Portada</a>
+</p>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Seguridad aplicada&quot;,&quot;hid&quot;:&quot;seguridad_aplicada&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:10,&quot;range&quot;:&quot;2142-&quot;} -->

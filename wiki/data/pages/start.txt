@@ -1,0 +1,31 @@
+====== Wiki de AgendaWeb ======
+
+**AgendaWeb** es una aplicación web en **PHP + MySQL/MariaDB** para registrar y consultar eventos personales. Cada usuario crea su cuenta, inicia sesión y gestiona **solo sus propios eventos** (título, fecha, hora, categoría, prioridad y descripción), con búsqueda por título y control de acceso por sesión.
+
+^ Proyecto ^ Detalle ^
+| Autor | Oscar Álvarez |
+| Materia | Desarrollo de Aplicaciones Web |
+| Unidad | 3 — Wikis |
+| Práctica | AgendaWeb P2.2 |
+| Estado | Login + CRUD + búsqueda funcionando |
+| Repositorio | https://github.com/OscarAlvarez262/AgendaWebP2.2 |
+
+----
+
+===== Navegación =====
+
+^ Sección ^ Página ^ Contenido ^
+| Investigación | [[wikis:investigacion|Wikis: investigación]] | Origen, características, Wikipedia, ejemplos, vandalismo, opinión y reflexión. |
+| Instalación | [[agendaweb:instalacion|Instalación de AgendaWeb]] | Requisitos, base de datos, conexión y arranque con ''php -S''. |
+| Base de datos | [[agendaweb:base_de_datos|Base de datos]] | Tablas, relaciones y esquema SQL. |
+| Estructura | [[agendaweb:paginas|Páginas y archivos]] | Archivos públicos, privados, acciones y piezas internas. |
+
+----
+
+===== Cómo usar esta wiki =====
+
+  * Usa el botón **Editar esta página** para modificar contenido (guarda con un resumen).
+  * Los enlaces en **rojo** llevan a páginas que aún no existen: al pulsarlos puedes crearlas.
+  * Revisa **Revisiones antiguas** para comparar cambios (similar a ''git diff'').
+
+> Esta wiki corre con **DokuWiki** en local: el contenido se guarda como archivos en ''data/pages/''.

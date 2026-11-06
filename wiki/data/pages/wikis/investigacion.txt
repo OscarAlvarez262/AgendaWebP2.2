@@ -1,0 +1,101 @@
+====== Investigación sobre wikis ======
+
+===== Origen =====
+
+**¿Quién creó el primer wiki, en qué año y cómo se llamaba?**
+
+El primer wiki lo creó Ward Cunningham, un programador estadounidense. Empezó a desarrollarlo en 1994 y lo puso en línea el 25 de marzo de 1995. Se llamaba WikiWikiWeb y estaba alojado en c2.com, dentro de un sitio sobre patrones de diseño de software. Fue el experimento que demostró que una web podía ser editada por sus propios lectores sin necesidad de un equipo central. Hoy WikiWikiWeb está en modo de solo lectura desde 2015, pero se le sigue considerando el primer wiki de la historia.
+
+**¿Qué significa “wiki” y de qué idioma viene?**
+
+“Wiki” viene del hawaiano y significa “rápido”. La forma “wiki wiki” vendría a ser “muy rápido”. Cunningham tomó el nombre del Wiki Wiki Shuttle, el autobús que conecta las terminales del aeropuerto de Honolulu. De hecho, al principio pensó en llamarlo “QuickWeb”, pero al final se quedó con WikiWikiWeb. Un detalle importante: “wiki” no es un acrónimo; lo de “What I Know Is” es un invento posterior, un retroacrónimo.
+
+===== Características =====
+
+**¿Qué hace que un sitio sea un wiki?**
+
+Principalmente cuatro cosas:
+
+  * **Edición desde el navegador:** entras en una página, pulsas “editar” y cambias el contenido sin instalar nada especial.
+  * **Enlaces internos:** las páginas se conectan entre sí, y si un enlace lleva a una página que no existe, suele aparecer en rojo para invitarte a crearla.
+  * **Historial de versiones:** cada cambio queda registrado con fecha, autor y resumen, y se puede comparar o revertir.
+  * **Colaboración:** el contenido no es de una sola persona, sino que se construye entre varias, con páginas de discusión, cambios recientes y normas de consenso.
+
+Un sitio con un botón de editar pero sin historial sería más bien un CMS colaborativo; un wiki de verdad combina edición, enlaces, memoria y trabajo en grupo.
+
+===== Wikipedia =====
+
+**¿Cuándo nació Wikipedia?**
+
+Wikipedia se lanzó el 15 de enero de 2001, impulsada por Jimmy Wales y Larry Sanger. La Wikipedia en español empezó a funcionar el 20 de mayo de 2001, aunque los wikis de varios idiomas se abrieron unos días antes, el 11 de mayo.
+
+**¿Cuántos artículos tiene hoy la Wikipedia en español?**
+
+Al **3 de noviembre de 2026**, la Wikipedia en español tiene **2.147.562 artículos**. Esa cifra cambia constantemente, así que es normal que dentro de unas horas varíe un poco. Si alguien mira el cuadro de la portada y ve unos cientos menos, es por la actualización de las plantillas, no porque el dato esté mal.
+
+**¿Qué motor usa y bajo qué licencia publica su contenido?**
+
+Usa MediaWiki, un software libre y de código abierto escrito en PHP. MediaWiki no es Wikipedia: es el motor que también utilizan Wikimedia Commons, Wiktionary y muchos otros wikis. El texto de Wikipedia se publica bajo Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0), y también hay contenido histórico bajo GFDL. Las imágenes pueden tener licencias distintas, muchas veces alojadas en Wikimedia Commons.
+
+===== Cuatro wikis que no son Wikipedia =====
+
+  * **De fans: Wookieepedia.** Es el wiki de Star Wars alojado en Fandom. Nació en 2005 y tiene más de 220.000 artículos sobre personajes, planetas, libros, series y cronologías. Eligieron un wiki porque el universo es enorme y está todo interconectado: un blog sería demasiado lineal y un foro dispersaría la información, mientras que el wiki permite que miles de fans creen páginas y las enlacen sin un equipo central.
+  * **Documentación técnica: ArchWiki.** Es la documentación oficial de Arch Linux. Funciona con MediaWiki desde 2005 y la mantiene la comunidad. Tiene sentido un wiki porque la documentación cambia con el software: un PDF se queda viejo, un foro entierra las soluciones y un CMS con pocos editores crea cuello de botella. El wiki permite corregir rápido, enlazar procedimientos y revertir malos consejos.
+  * **Empresa o equipo: Intelpedia.** Fue el wiki interno de Intel, lanzado en noviembre de 2005. Hacia 2008 tenía unas 25.000 páginas, 100 millones de visitas y más de 8.700 colaboradores. Eligieron un wiki porque el conocimiento estaba repartido entre correos, documentos y la cabeza de la gente; el wiki permitía que cualquier empleado creara, corrigiera y enlazara información con muy poca fricción. Eso sí, solo se publicaba información no sensible y había controles de acceso.
+  * **Personal: TiddlyWiki.** Es un wiki que cabe en un solo archivo HTML y funciona sin servidor. Se usa mucho como “segundo cerebro” o cuaderno no lineal. La gracia es que puedes enlazar notas, poner etiquetas, buscar y llevarlo todo contigo sin depender de la nube. Frente a Word, que es lineal, o una app de notas muy jerárquica, el wiki personal se parece más a cómo uno piensa: por asociaciones.
+
+===== Vandalismo y fiabilidad =====
+
+**¿Cómo se defienden los wikis del vandalismo y de las guerras de ediciones?**
+
+No hay una solución mágica, pero sí varias capas. La idea básica es la seguridad blanda: no intentar impedir cada error, sino hacerlo fácil de detectar y revertir.
+
+  * **Herramientas técnicas:** historial, diffs, cambios recientes, listas de seguimiento, bots antivandalismo como ClueBot NG, filtros de abuso, protección de páginas, revisión pendiente y bloqueos de usuarios.
+  * **Normas sociales:** civismo, punto de vista neutral, verificabilidad, páginas de discusión, mediación y, en Wikipedia, la regla de las tres reversiones y el arbitraje.
+  * **Límites:** ningún wiki es perfecto. Cuanto más abierto es, más depende de una comunidad activa y de buenas herramientas.
+
+**¿Por qué en trabajos académicos no se cita Wikipedia directamente, pero sí sus referencias?**
+
+Porque Wikipedia es una fuente terciaria: resume fuentes secundarias, cambia constantemente y no tiene un autor responsable único ni pasa por revisión por pares. Citar Wikipedia como autoridad sería citar una foto del proceso, no el proceso. En cambio, sus referencias sirven como pista para llegar a libros, artículos o informes originales.
+
+  * Usa Wikipedia para orientarte.
+  * Ve a la fuente original.
+  * Comprueba que de verdad respalda lo que dice el artículo.
+  * Cita esa fuente con sus datos bibliográficos, no la página de Wikipedia.
+
+Eso sí, no todas las referencias de Wikipedia son buenas; algunas están desactualizadas o no dicen lo que el artículo afirma, así que hay que revisarlas.
+
+===== Opinión =====
+
+**¿Wiki, WordPress o desarrollo a medida para AgendaWeb?**
+
+  * **Wiki:** sirve sobre todo para conocimiento colectivo y cambiante: documentación interna, manuales, bases de conocimiento, enciclopedias de fans o notas personales.
+  * **WordPress:** sirve mejor para publicar y posicionar: blog, web de empresa, portfolio, catálogo o landing page, con gente no técnica editando.
+  * **Desarrollo a medida:** tiene sentido cuando el producto es el flujo de trabajo: disponibilidad, citas, recordatorios, pagos, cancelaciones, roles de profesionales y clientes.
+  * **Para AgendaWeb:** si el núcleo es gestionar citas, tiraría por desarrollo a medida o por un módulo a medida. WordPress podría servir para la parte pública y un plugin de reservas para validar el MVP, pero un wiki no sirve para reservar.
+
+La opción más sensata suele ser híbrida: WordPress para contenidos y captación, desarrollo propio para la agenda y los pagos, y wiki para documentar el sistema internamente.
+
+===== Reflexión (Parte 4) =====
+
+**¿Qué ganas y qué pierdes guardando el contenido en archivos (DokuWiki) en lugar de una base de datos (MediaWiki, tu AgendaWeb)?**
+
+  * **Respaldos:** con DokuWiki ganas simplicidad: las páginas son archivos de texto en ''data/pages'' y las versiones viejas quedan en ''data/attic''; basta con copiar la carpeta. Con una base de datos hay que exportar/importar (por ejemplo, ''mysqldump'') y coordinar archivos + base.
+  * **Búsquedas:** una base de datos suele ofrecer búsquedas más potentes y estructuradas (índices, consultas complejas). En archivos, la búsqueda depende del motor del wiki; funciona bien para texto, pero escalar o filtrar por campos es más limitado.
+  * **Muchos usuarios a la vez:** MediaWiki/BD manejan mejor concurrencia, bloqueos y transacciones. DokuWiki puede servir a equipos pequeños, pero con mucha actividad simultánea aparecen más conflictos de edición y menos control fino.
+  * **Facilidad de instalación:** DokuWiki gana: no necesita MySQL, se descomprime y corre con PHP. MediaWiki (y una app como AgendaWeb) requieren configurar base, credenciales y más dependencias (por ejemplo, la extensión ''intl'').
+
+En resumen: archivos favorecen portabilidad y arranque rápido; base de datos favorece estructura, concurrencia y crecimiento. Para la documentación de AgendaWeb, DokuWiki es práctico; para la propia agenda multiusuario, la base de datos es la opción correcta.
+
+===== Fuentes =====
+
+  * [[https://en.wikipedia.org/wiki/WikiWikiWeb|WikiWikiWeb — Wikipedia]]
+  * [[https://en.wikipedia.org/wiki/Wiki|Wiki — Wikipedia]]
+  * [[https://es.wikipedia.org/wiki/Especial:Estad%C3%ADsticas|Estadísticas de la Wikipedia en español]]
+  * [[https://es.wikipedia.org/wiki/Wikipedia|Wikipedia — Wikipedia en español]]
+  * [[https://es.wikipedia.org/wiki/Wikipedia_en_espa%C3%B1ol|Wikipedia en español]]
+  * [[https://www.mediawiki.org/wiki/MediaWiki|MediaWiki]]
+  * [[https://en.wikipedia.org/wiki/Wookieepedia|Wookieepedia]]
+  * [[https://wiki.archlinux.org/title/Main_Page|ArchWiki]]
+  * [[https://insidesocialmedia.com/the-story-of-intelpedia-a-model-corporate-wiki|The story of Intelpedia]]
+  * [[https://tiddlywiki.com|TiddlyWiki]]

@@ -1,0 +1,1 @@
+<span class="kw1">CREATE</span> <span class="kw1">DATABASE</span> agenda <span class="kw1">CHARACTER</span> <span class="kw1">SET</span> utf8mb4;

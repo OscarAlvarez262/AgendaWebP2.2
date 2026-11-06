@@ -1,0 +1,39 @@
+<span class="kw1">CREATE</span> <span class="kw1">TABLE</span> <span class="kw1">IF</span> <span class="kw1">NOT</span> <span class="kw1">EXISTS</span> categorias <span class="br0">&#40;</span>
+    id     <span class="kw1">INT</span> <span class="kw1">AUTO_INCREMENT</span> <span class="kw1">PRIMARY</span> <span class="kw1">KEY</span><span class="sy0">,</span>
+    nombre <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">50</span><span class="br0">&#41;</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span> <span class="kw1">UNIQUE</span>
+<span class="br0">&#41;</span> ENGINE<span class="sy0">=</span>InnoDB <span class="kw1">DEFAULT</span> CHARSET<span class="sy0">=</span>utf8mb4;
+&nbsp;
+<span class="kw1">INSERT</span> <span class="kw1">IGNORE</span> <span class="kw1">INTO</span> categorias <span class="br0">&#40;</span>nombre<span class="br0">&#41;</span> <span class="kw1">VALUES</span>
+    <span class="br0">&#40;</span><span class="st0">'Trabajo'</span><span class="br0">&#41;</span><span class="sy0">,</span>
+    <span class="br0">&#40;</span><span class="st0">'Personal'</span><span class="br0">&#41;</span><span class="sy0">,</span>
+    <span class="br0">&#40;</span><span class="st0">'Estudio'</span><span class="br0">&#41;</span><span class="sy0">,</span>
+    <span class="br0">&#40;</span><span class="st0">'Ocio / Deporte'</span><span class="br0">&#41;</span>;
+&nbsp;
+<span class="kw1">CREATE</span> <span class="kw1">TABLE</span> <span class="kw1">IF</span> <span class="kw1">NOT</span> <span class="kw1">EXISTS</span> usuarios <span class="br0">&#40;</span>
+    id         <span class="kw1">INT</span> <span class="kw1">AUTO_INCREMENT</span> <span class="kw1">PRIMARY</span> <span class="kw1">KEY</span><span class="sy0">,</span>
+    nombre     <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">80</span><span class="br0">&#41;</span>  <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    correo     <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">120</span><span class="br0">&#41;</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span> <span class="kw1">UNIQUE</span><span class="sy0">,</span>
+    clave_hash <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">255</span><span class="br0">&#41;</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    creado_en  DATETIME     <span class="kw1">DEFAULT</span> <span class="kw1">CURRENT_TIMESTAMP</span>
+<span class="br0">&#41;</span> ENGINE<span class="sy0">=</span>InnoDB <span class="kw1">DEFAULT</span> CHARSET<span class="sy0">=</span>utf8mb4;
+&nbsp;
+<span class="kw1">CREATE</span> <span class="kw1">TABLE</span> <span class="kw1">IF</span> <span class="kw1">NOT</span> <span class="kw1">EXISTS</span> eventos <span class="br0">&#40;</span>
+    id           <span class="kw1">INT</span> <span class="kw1">AUTO_INCREMENT</span> <span class="kw1">PRIMARY</span> <span class="kw1">KEY</span><span class="sy0">,</span>
+    usuario_id   <span class="kw1">INT</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    titulo       <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">120</span><span class="br0">&#41;</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    fecha        <span class="kw1">DATE</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    hora         <span class="kw1">TIME</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    categoria_id <span class="kw1">INT</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    prioridad    <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">10</span><span class="br0">&#41;</span> <span class="kw1">NOT</span> <span class="kw1">NULL</span> <span class="kw1">DEFAULT</span> <span class="st0">'media'</span><span class="sy0">,</span>
+    descripcion  <span class="kw1">VARCHAR</span><span class="br0">&#40;</span><span class="nu0">500</span><span class="br0">&#41;</span> <span class="kw1">NULL</span><span class="sy0">,</span>
+    creado_en    <span class="kw1">TIMESTAMP</span> <span class="kw1">DEFAULT</span> <span class="kw1">CURRENT_TIMESTAMP</span><span class="sy0">,</span>
+&nbsp;
+    <span class="kw1">INDEX</span> <span class="br0">&#40;</span>usuario_id<span class="br0">&#41;</span><span class="sy0">,</span>
+    <span class="kw1">INDEX</span> <span class="br0">&#40;</span>fecha<span class="sy0">,</span> hora<span class="br0">&#41;</span><span class="sy0">,</span>
+    <span class="kw1">CONSTRAINT</span> fk_eventos_usuario
+        <span class="kw1">FOREIGN</span> <span class="kw1">KEY</span> <span class="br0">&#40;</span>usuario_id<span class="br0">&#41;</span> <span class="kw1">REFERENCES</span> usuarios <span class="br0">&#40;</span>id<span class="br0">&#41;</span>
+        <span class="kw1">ON</span> <span class="kw1">DELETE</span> CASCADE<span class="sy0">,</span>
+    <span class="kw1">CONSTRAINT</span> fk_eventos_categoria
+        <span class="kw1">FOREIGN</span> <span class="kw1">KEY</span> <span class="br0">&#40;</span>categoria_id<span class="br0">&#41;</span> <span class="kw1">REFERENCES</span> categorias <span class="br0">&#40;</span>id<span class="br0">&#41;</span>
+        <span class="kw1">ON</span> <span class="kw1">DELETE</span> <span class="kw1">RESTRICT</span>
+<span class="br0">&#41;</span> ENGINE<span class="sy0">=</span>InnoDB <span class="kw1">DEFAULT</span> CHARSET<span class="sy0">=</span>utf8mb4;

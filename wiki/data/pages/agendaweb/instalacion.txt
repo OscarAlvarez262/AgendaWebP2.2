@@ -1,0 +1,78 @@
+====== Instalación de AgendaWeb ======
+
+[[start|← Volver a la portada]]
+
+Guía para instalar y arrancar **AgendaWeb** en local, con notas para DomCloud.
+
+----
+
+===== Requisitos =====
+
+^ Requisito ^ Detalle ^
+| PHP | 8.x recomendado (probado con 8.5.10 en local). |
+| Extensión | ''mysqli'' habilitada. |
+| Base de datos | MariaDB / MySQL. |
+| Servidor local | Servidor embebido de PHP: ''php -S''. |
+
+----
+
+===== 1. Obtener el proyecto =====
+
+<code bash>
+git clone https://github.com/OscarAlvarez262/AgendaWebP2.2.git
+cd AgendaWebP2.2
+</code>
+
+O trabaja desde: ''...\Practica 4\AgendaWeb\AgendaWebP2.2''.
+
+===== 2. Crear la base de datos (local) =====
+
+''db.sql'' **no** incluye ''CREATE DATABASE'' ni ''USE'' (en DomCloud la base la crea el hosting). En local, créala una vez:
+
+<code sql>
+CREATE DATABASE agenda CHARACTER SET utf8mb4;
+</code>
+
+Importa el esquema:
+
+<code bash>
+mysql -u root -p agenda < db.sql
+</code>
+
+> ''db.sql'' es idempotente (''IF NOT EXISTS'' / ''INSERT IGNORE''): reimportar no borra datos ni duplica categorías.
+
+===== 3. Configurar la conexión =====
+
+  - Copia ''conexion.ejemplo.php'' como ''conexion.php''.
+  - Rellena credenciales o usa variables de entorno: ''MARIADB_HOST'', ''MARIADB_USER'', ''MARIADB_PASS'', ''MARIADB_NAME''.
+  - **Importante:** ''conexion.php'' contiene secretos y está en ''.gitignore'' (no se sube a GitHub).
+
+===== 4. Arrancar el servidor =====
+
+<code bash>
+php -S localhost:8000
+</code>
+
+Abre: http://localhost:8000/
+
+Sin sesión activa, la app redirige a ''login.php''.
+
+===== 5. Primer uso (P8) =====
+
+  - Crea una cuenta en ''registro.php'' e inicia sesión.
+  - La app ejecuta una **migración automática** (''partes/esquema.php'') en el primer request: ajusta ''usuarios'', ''eventos.usuario_id'', FK y respaldo.
+  - Si había eventos antiguos sin dueño (P7), el **primer usuario** que se registra/inicia sesión los reclama.
+
+----
+
+===== DomCloud (resumen) =====
+
+^ Elemento ^ Nota ^
+| Base | Suele ser ''${USERNAME}_agenda'' (feature ''mysql create agenda''). |
+| Deploy | ''deploy.yaml'' es referencia; el script real se configura en Setup → Deploy. |
+| Conexión | Puede generarse ''conexion.php'' desde ''conexion.ejemplo.php''. |
+| Secretos | Nunca subir ''conexion.php'' ni ''LocalSettings.php'' (MediaWiki) a GitHub. |
+
+----
+
+[[start|← Volver a la portada]] | [[agendaweb:base_de_datos|Base de datos →]] | [[agendaweb:paginas|Páginas →]]
