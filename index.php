@@ -56,32 +56,45 @@ function mostrarEvento(array $ev): string
 
 require __DIR__ . '/partes/base_datos.php';
 
-// Buscar por título
-$buscar = trim($_GET['buscar'] ?? '');
+// --- Búsqueda (P9): texto + categoría, siempre solo mis eventos ---
+$q = mb_substr(trim($_GET['q'] ?? ''), 0, 60);        // texto, máximo 60 caracteres
+$categoriaId = (int) ($_GET['categoria'] ?? 0);        // 0 = todas
 
-// Construimos la consulta manteniendo el filtro por usuario
+// Las categorías del filtro (también sirven para validar el id recibido)
+$categorias = $mysqli->query('SELECT id, nombre FROM categorias ORDER BY nombre')->fetch_all(MYSQLI_ASSOC);
+$idsValidos = array_map('intval', array_column($categorias, 'id'));
+if (!in_array($categoriaId, $idsValidos, true)) {
+    $categoriaId = 0;                                   // una categoría inventada = todas
+}
+$buscando = ($q !== '' || $categoriaId !== 0);
+
+$condiciones = ['e.usuario_id = ?'];                    // SIEMPRE: solo mis eventos (P8)
+$tipos       = 'i';
+$valores     = [$usuarioId];
+
+if ($q !== '') {
+    // % y _ son comodines de LIKE: se escapan para buscarlos como texto normal
+    $patron = '%' . addcslashes($q, '%_\\') . '%';
+    $condiciones[] = '(e.titulo LIKE ? OR e.descripcion LIKE ?)';
+    $tipos      .= 'ss';
+    $valores[]   = $patron;
+    $valores[]   = $patron;
+}
+if ($categoriaId !== 0) {
+    $condiciones[] = 'e.categoria_id = ?';
+    $tipos      .= 'i';
+    $valores[]   = $categoriaId;
+}
+
+// implode une NUESTRAS piezas fijas; los datos del usuario solo viajan por los ?
 $sql = 'SELECT e.id, e.titulo, e.fecha, e.hora, e.prioridad, e.descripcion,
                c.nombre AS categoria
           FROM eventos e
           JOIN categorias c ON c.id = e.categoria_id
-         WHERE e.usuario_id = ?';
-
-$tipos = 'i';
-$valores = [$usuarioId];
-
-if ($buscar !== '') {
-    $sql .= ' AND e.titulo LIKE ?';
-    $tipos .= 's';
-    // Los comodines SIEMPRE van en la variable, nunca concatenados al SQL
-    $valores[] = '%' . $buscar . '%';
-}
-
-$sql .= ' ORDER BY e.fecha DESC, e.hora IS NULL ASC, e.hora DESC';
-
+         WHERE ' . implode(' AND ', $condiciones) . '
+         ORDER BY e.fecha, e.hora';
 $stmt = $mysqli->prepare($sql);
-
-// bind_param dinámico
-$stmt->bind_param($tipos, ...$valores);
+$stmt->bind_param($tipos, ...$valores);                 // ... reparte el arreglo en argumentos
 $stmt->execute();
 $eventos = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
@@ -169,29 +182,17 @@ $mysqli->close();
             <div>
                 <h1 class="page__title">Mis eventos</h1>
                 <p class="page__subtitle">
-                    <?= count($eventos) ?> eventos registrados
+                    <?php if ($buscando): ?>
+                        <?= count($eventos) ?> resultado<?= count($eventos) === 1 ? '' : 's' ?><?= $q !== '' ? ' para «' . e($q) . '»' : '' ?>
+                    <?php else: ?>
+                        <?= count($eventos) ?> eventos registrados
+                    <?php endif; ?>
                 </p>
             </div>
 
-            <div style="display:flex; gap:.6rem; flex-wrap:wrap; align-items:center;">
-                <a href="registrar.php" class="btn-primary">
-                    + Nuevo evento
-                </a>
-
-                <form method="get" action="index.php" style="display:flex; gap:.4rem; align-items:center; flex-wrap:wrap;">
-                    <input
-                        type="text"
-                        name="buscar"
-                        placeholder="Buscar por título..."
-                        value="<?= htmlspecialchars($buscar, ENT_QUOTES, 'UTF-8') ?>"
-                        style="padding:.55rem .8rem;border-radius:8px;border:1px solid #ddd; min-width:230px;"
-                    >
-                    <button type="submit" class="btn-secondary btn-sm">Buscar</button>
-                    <?php if ($buscar !== ''): ?>
-                        <a href="index.php" class="btn-secondary btn-sm">Limpiar</a>
-                    <?php endif; ?>
-                </form>
-            </div>
+            <a href="registrar.php" class="btn-primary">
+                + Nuevo evento
+            </a>
         </div>
 
         <p class="resumen">
@@ -202,11 +203,28 @@ $mysqli->close();
             <?php endforeach; ?>
         </p>
 
-        <?php if ($buscar !== '' && empty($eventos)): ?>
+        <form class="buscador" method="get" action="index.php" role="search">
+            <input class="form-input" type="search" name="q" value="<?= e($q) ?>" maxlength="60"
+                   placeholder="Buscar en título o descripción…" aria-label="Buscar eventos">
+            <select class="form-select" name="categoria" aria-label="Filtrar por categoría">
+                <option value="0">Todas las categorías</option>
+                <?php foreach ($categorias as $cat): ?>
+                    <option value="<?= (int) $cat['id'] ?>" <?= $categoriaId === (int) $cat['id'] ? 'selected' : '' ?>>
+                        <?= e($cat['nombre']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <button type="submit" class="btn-primary">Buscar</button>
+            <?php if ($buscando): ?>
+                <a href="index.php" class="btn-secondary">Limpiar</a>
+            <?php endif; ?>
+        </form>
+
+        <?php if (empty($eventos) && $buscando): ?>
 
             <div class="empty-state">
-                <p>Sin resultados para tu búsqueda</p>
-                <a href="index.php" class="btn-secondary">Volver a mis eventos</a>
+                <p>Sin resultados para tu búsqueda.</p>
+                <a href="index.php" class="btn-secondary">Ver todos mis eventos</a>
             </div>
 
         <?php elseif (empty($eventos)): ?>

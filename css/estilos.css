@@ -1072,3 +1072,13 @@ main.contenedor {
     margin-bottom: 0;
 }
 
+/* ============================================================
+   BÚSQUEDA DE EVENTOS (P9)
+   ============================================================ */
+
+.buscador { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.buscador .form-input  { flex: 1 1 220px; width: auto; }
+.buscador .form-select { flex: 0 1 210px; width: auto; }
+.buscador .btn-primary,
+.buscador .btn-secondary { width: auto; margin: 0; align-self: center; }
+
