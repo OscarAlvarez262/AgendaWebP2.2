@@ -29,16 +29,37 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 // Punto único de conexión del proyecto (incluye conexion.php y aplica la migración P8 si hace falta)
 require __DIR__ . '/partes/base_datos.php';
 
+// 5 · Filtros opcionales: lo mismo que el buscador de P9
+$q = mb_substr(trim($_GET['q'] ?? ''), 0, 60);
+$categoriaId = (int) ($_GET['categoria'] ?? 0);
+
+$condiciones = ['e.usuario_id = ?'];          // SIEMPRE: solo mis eventos
+$tipos       = 'i';
+$valores     = [$usuarioId];
+
+if ($q !== '') {
+    $patron = '%' . addcslashes($q, '%_\\') . '%';
+    $condiciones[] = '(e.titulo LIKE ? OR e.descripcion LIKE ?)';
+    $tipos      .= 'ss';
+    $valores[]   = $patron;
+    $valores[]   = $patron;
+}
+if ($categoriaId > 0) {
+    $condiciones[] = 'e.categoria_id = ?';
+    $tipos      .= 'i';
+    $valores[]   = $categoriaId;
+}
+
 // 3 · Nunca SELECT *: elige las columnas que entregas
 $sql = "SELECT e.id, e.titulo, e.fecha,
                TIME_FORMAT(e.hora, '%H:%i') AS hora,
                c.nombre AS categoria, e.descripcion
           FROM eventos e
           JOIN categorias c ON c.id = e.categoria_id
-         WHERE e.usuario_id = ?
+         WHERE " . implode(' AND ', $condiciones) . "
          ORDER BY e.fecha, e.hora";
 $stmt = $mysqli->prepare($sql);
-$stmt->bind_param('i', $usuarioId);
+$stmt->bind_param($tipos, ...$valores);
 $stmt->execute();
 $eventos = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
@@ -48,5 +69,6 @@ $mysqli->close();
 responder(200, [
     'usuario' => $_SESSION['nombre'] ?? '',
     'total'   => count($eventos),
+    'filtros' => ['q' => $q, 'categoria' => $categoriaId],
     'eventos' => $eventos,
 ]);
