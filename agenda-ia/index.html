@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgendaWeb</title>
+    <meta name="description" content="AgendaWeb: gestor personal de eventos en el navegador con localStorage, búsqueda en vivo y respaldo en JSON." />
+    <meta property="og:title" content="AgendaWeb" />
+    <meta property="og:description" content="AgendaWeb: gestor personal de eventos en el navegador con localStorage, búsqueda en vivo y respaldo en JSON." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Rutas relativas para que funcione en cualquier subcarpeta de un hosting estático -->
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body>
+    <a href="#contenido-principal" class="enlace-saltar">Ir al contenido principal</a>
+
+    <!-- Encabezado principal con marca y navegación -->
+    <header class="encabezado">
+      <div class="contenedor-ancho encabezado-interno">
+        <a href="#tablero-eventos" class="marca">AgendaWeb</a>
+        <nav class="navegacion" aria-label="Navegación principal">
+          <a href="#tablero-eventos" class="enlace-nav activo" data-seccion="tablero-eventos" aria-current="page">Mis eventos</a>
+          <a href="#seccion-formulario" class="enlace-nav" data-seccion="seccion-formulario">Nuevo evento</a>
+          <a href="#seccion-respaldo" class="enlace-nav" data-seccion="seccion-respaldo">Respaldo JSON</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="contenido-principal" class="contenedor-ancho contenedor-principal">
+      <!-- Aviso si localStorage contiene JSON dañado (no se borra nada sin confirmación) -->
+      <div id="alerta-almacenamiento" class="alerta-banner alerta-advertencia" role="alert" hidden>
+        <div class="alerta-contenido">
+          <p id="texto-alerta-almacenamiento" class="alerta-texto"></p>
+          <button type="button" id="btn-limpiar-corrupto" class="boton boton-secundario">Restablecer almacenamiento</button>
+        </div>
+      </div>
+
+      <!-- Mensajes de confirmación y errores de operación (importar, exportar, guardar, borrar) -->
+      <div id="mensaje-estado" class="alerta-banner" role="status" aria-live="polite" hidden>
+        <p id="texto-mensaje-estado" class="alerta-texto"></p>
+      </div>
+
+      <div class="disposicion-tablero">
+        <!-- Columna lateral: formulario de alta/edición y respaldo JSON -->
+        <aside class="panel-lateral">
+          <section id="seccion-formulario" class="tarjeta-panel" aria-labelledby="titulo-formulario">
+            <h2 id="titulo-formulario" class="titulo-seccion">Nuevo evento</h2>
+
+            <form id="form-evento" class="formulario-evento" novalidate>
+              <div class="grupo-campo">
+                <label for="campo-titulo">
+                  Título <span class="marca-obligatorio" aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="campo-titulo"
+                  name="titulo"
+                  maxlength="120"
+                  autocomplete="off"
+                  placeholder="Ej. Entrega de proyecto final"
+                  aria-describedby="ayuda-titulo error-titulo"
+                  required
+                />
+                <div class="meta-campo">
+                  <span id="ayuda-titulo" class="ayuda-campo">Obligatorio · Máximo 120 caracteres</span>
+                  <span class="contador-caracteres" aria-hidden="true"><span id="contador-titulo">0</span>/120</span>
+                </div>
+                <p id="error-titulo" class="error-campo" role="alert" hidden></p>
+              </div>
+
+              <div class="fila-campos">
+                <div class="grupo-campo">
+                  <label for="campo-fecha">
+                    Fecha <span class="marca-obligatorio" aria-hidden="true">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="campo-fecha"
+                    name="fecha"
+                    aria-describedby="error-fecha"
+                    required
+                  />
+                  <p id="error-fecha" class="error-campo" role="alert" hidden></p>
+                </div>
+
+                <div class="grupo-campo">
+                  <label for="campo-hora">Hora (opcional)</label>
+                  <input
+                    type="time"
+                    id="campo-hora"
+                    name="hora"
+                    aria-describedby="error-hora"
+                  />
+                  <p id="error-hora" class="error-campo" role="alert" hidden></p>
+                </div>
+              </div>
+
+              <div class="grupo-campo">
+                <label for="campo-categoria">
+                  Categoría <span class="marca-obligatorio" aria-hidden="true">*</span>
+                </label>
+                <select
+                  id="campo-categoria"
+                  name="categoria"
+                  aria-describedby="error-categoria"
+                  required
+                >
+                  <option value="">Selecciona una categoría</option>
+                  <option value="Trabajo">Trabajo</option>
+                  <option value="Personal">Personal</option>
+                  <option value="Estudio">Estudio</option>
+                  <option value="Ocio / Deporte">Ocio / Deporte</option>
+                </select>
+                <p id="error-categoria" class="error-campo" role="alert" hidden></p>
+              </div>
+
+              <div class="grupo-campo">
+                <label for="campo-descripcion">Descripción (opcional)</label>
+                <textarea
+                  id="campo-descripcion"
+                  name="descripcion"
+                  rows="3"
+                  maxlength="500"
+                  placeholder="Notas, ubicación o detalles del evento..."
+                  aria-describedby="ayuda-descripcion error-descripcion"
+                ></textarea>
+                <div class="meta-campo">
+                  <span id="ayuda-descripcion" class="ayuda-campo">Opcional · Máximo 500 caracteres</span>
+                  <span class="contador-caracteres" aria-hidden="true"><span id="contador-descripcion">0</span>/500</span>
+                </div>
+                <p id="error-descripcion" class="error-campo" role="alert" hidden></p>
+              </div>
+
+              <div class="acciones-formulario">
+                <button type="submit" id="btn-guardar" class="boton boton-primario">Guardar evento</button>
+                <button type="button" id="btn-cancelar-edicion" class="boton boton-secundario" hidden>Cancelar edición</button>
+              </div>
+            </form>
+          </section>
+
+          <section id="seccion-respaldo" class="tarjeta-panel" aria-labelledby="titulo-respaldo">
+            <h2 id="titulo-respaldo" class="titulo-seccion">Respaldo JSON</h2>
+            <p class="texto-respaldo">
+              Descarga tus eventos en un archivo JSON o importa un respaldo para reemplazar los eventos actuales en este navegador.
+            </p>
+            <div class="acciones-respaldo">
+              <button type="button" id="btn-exportar" class="boton boton-primario">Exportar JSON</button>
+              <button type="button" id="btn-importar" class="boton boton-secundario">Importar JSON</button>
+              <input
+                type="file"
+                id="input-importar"
+                accept=".json,application/json"
+                class="oculto-visual"
+                aria-label="Seleccionar archivo JSON para importar"
+              />
+            </div>
+          </section>
+        </aside>
+
+        <!-- Columna principal: buscador en vivo y tablero de tarjetas -->
+        <section id="tablero-eventos" class="zona-tablero" aria-labelledby="titulo-tablero">
+          <div class="cabecera-tablero">
+            <h1 id="titulo-tablero" class="titulo-principal">Mis eventos</h1>
+            <p id="contador-eventos" class="contador-eventos" aria-live="polite">0 eventos registrados</p>
+          </div>
+
+          <div class="barra-filtros" role="search" aria-label="Buscar y filtrar eventos">
+            <div class="grupo-campo-filtro grupo-buscador">
+              <label for="buscador-texto">Buscar por texto</label>
+              <input
+                type="search"
+                id="buscador-texto"
+                placeholder="Buscar en título o descripción..."
+                autocomplete="off"
+              />
+            </div>
+
+            <div class="grupo-campo-filtro grupo-categoria-filtro">
+              <label for="filtro-categoria">Categoría</label>
+              <select id="filtro-categoria">
+                <option value="">Todas</option>
+                <option value="Trabajo">Trabajo</option>
+                <option value="Personal">Personal</option>
+                <option value="Estudio">Estudio</option>
+                <option value="Ocio / Deporte">Ocio / Deporte</option>
+              </select>
+            </div>
+
+            <div class="accion-limpiar-filtros">
+              <button type="button" id="btn-limpiar-filtros" class="boton boton-secundario" hidden>Limpiar filtros</button>
+            </div>
+          </div>
+
+          <div id="lista-eventos" class="lista-eventos" aria-live="polite"></div>
+
+          <div id="estado-vacio" class="estado-vacio" hidden>
+            <p id="texto-estado-vacio" class="texto-estado-vacio"></p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="pie-pagina">
+      <div class="contenedor-ancho">
+        <p class="texto-pie">AgendaWeb · Oscar Álvarez · 2026 · Hecha con Google AI Studio</p>
+      </div>
+    </footer>
+
+    <!-- Diálogo accesible de confirmación para borrar, reemplazar al importar o restablecer almacenamiento -->
+    <dialog id="modal-confirmacion" class="modal-confirmacion" aria-labelledby="modal-titulo" aria-describedby="modal-mensaje">
+      <div class="modal-contenido">
+        <h2 id="modal-titulo" class="modal-titulo">Confirmar acción</h2>
+        <p id="modal-mensaje" class="modal-mensaje"></p>
+        <div class="modal-acciones">
+          <button type="button" id="modal-btn-cancelar" class="boton boton-secundario">Cancelar</button>
+          <button type="button" id="modal-btn-confirmar" class="boton boton-primario">Confirmar</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script src="js/app.js" defer></script>
+  </body>
+</html>
