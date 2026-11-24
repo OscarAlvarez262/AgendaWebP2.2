@@ -41,14 +41,55 @@ function crearTarjeta(ev) {
 // Pinta la lista completa
 function pintar(datos) {
     lista.replaceChildren();               // borra lo que había antes
-    estado.textContent = datos.total + ' eventos';
+    const buscando = datos.filtros.q !== '' || datos.filtros.categoria !== 0;
+
+    if (datos.total === 0) {
+        estado.textContent = buscando ? 'Sin resultados para tu búsqueda.'
+                                      : 'Aún no tienes eventos registrados.';
+        return;
+    }
+
+    const s = datos.total === 1 ? '' : 's';             // singular o plural
+    estado.textContent = `${datos.total} evento${s} `
+                       + (buscando ? `encontrado${s}` : `registrado${s}`);
     datos.eventos.forEach(ev => lista.append(crearTarjeta(ev)));
 }
 
 async function cargarEventos() {
-    const res   = await fetch('api.php');   // 1 · pedir
-    const datos = await res.json();         // 3 · convertir
-    pintar(datos);                          // 4 · pintar
+    const params = new URLSearchParams({ q: campoQ.value.trim(), categoria: campoCat.value });
+    estado.textContent = 'Cargando eventos…';
+
+    try {
+        const res = await fetch('api.php?' + params);    // 1 · pedir
+
+        if (res.status === 401) {                        // 2 · revisar
+            estado.innerHTML = 'Tu sesión terminó. <a href="login.php">Inicia sesión</a> de nuevo.';
+            lista.replaceChildren();
+            return;
+        }
+        if (!res.ok) {
+            throw new Error('La API respondió ' + res.status);
+        }
+
+        const datos = await res.json();                  // 3 · convertir
+        pintar(datos);                                   // 4 · pintar
+    } catch (error) {
+        // Sin red, servidor caído o JSON roto
+        console.error(error);
+        estado.textContent = 'No se pudieron cargar los eventos. Intenta de nuevo más tarde.';
+        lista.replaceChildren();
+    }
 }
 
-cargarEventos();
+// Espera 300 ms a que dejes de teclear antes de pedir
+let espera;
+campoQ.addEventListener('input', () => {
+    clearTimeout(espera);
+    espera = setTimeout(cargarEventos, 300);
+});
+campoCat.addEventListener('change', cargarEventos);
+
+// Si presionan Enter, que no se recargue la página
+document.getElementById('filtros').addEventListener('submit', e => e.preventDefault());
+
+cargarEventos();                                        // primera carga
