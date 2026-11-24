@@ -139,6 +139,9 @@ $mysqli->close();
                 <a href="index.php" class="nav__link is-active">
                     Mis eventos
                 </a>
+                <a href="explorar.php" class="nav__link">
+                    Explorar
+                </a>
                 <a href="registrar.php" class="nav__link">
                     Nuevo evento
                 </a>
